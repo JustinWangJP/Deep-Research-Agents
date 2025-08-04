@@ -1,26 +1,28 @@
 # 🔬 Deep Research Agents
 
-AI agent system that automates internal document search and deep research for enterprises
+企業向けの内部文書検索と詳細調査を自動化するAIエージェントシステム
 
-## 🎯 Overview
-Deep Research Agents is a next-generation MultiAgent system built on **Semantic Kernel**. Through **MagenticOrchestration**, multiple specialized AI agents dynamically collaborate to automatically generate high-quality research reports from enterprise internal documents. From internal document search via Azure AI Search, Semantic Kernel Memory, to comprehensive reliability assessment, it intelligently automates the entire enterprise research process.
+## 🎯 概要
 
-### 🌟 Key Features
+Deep Research Agentsは、**Semantic Kernel**上に構築された次世代のMultiAgentシステムです。**MagenticOrchestration**を通じて、複数の専門AIエージェントが動的に連携し、企業の内部文書から高品質な調査レポートを自動生成します。Azure AI Search、Semantic Kernel Memoryによる内部文書検索から包括的な信頼性評価まで、企業の調査プロセス全体をインテリジェントに自動化します。
 
-- **🤖 Magentic Multi-Agent Orchestration**: Latest orchestration technology from Semantic Kernel
-- **🔍 Advanced Internal Document Search**: Azure AI Search + Semantic Kernel Memory integration
-- **🌐 Web Search Integration**: Enhanced research capabilities with external web search fallback
-- **🧠 Contextual Memory Management**: Persistent research context and knowledge integration via Semantic Kernel Memory
-- **🛡️ AI Reliability Assessment**: Multi-layered Confidence evaluation and source quality management
-- **📝 Structured Report Generation**: Evidence-based reports with citation management
-- **🌐 Multilingual Intelligence**: Professional terminology translation system
-- **⚡ Dynamic Quality Management**: Real-time quality assessment and self-improvement loops
+### 🌟 主要機能
 
-## 🏗️ Architecture
+- **🤖 Magentic Multi-Agent Orchestration**: Semantic Kernelの最新オーケストレーション技術
+- **🔍 高度な内部文書検索**: Azure AI Search + Semantic Kernel Memory統合
+- **🌐 Web検索統合**: 外部Web検索フォールバックによる調査能力の強化
+- **🧠 コンテキストメモリ管理**: Semantic Kernel Memoryによる永続的な調査コンテキストと知識統合
+- **🛡️ AI信頼性評価**: 多層Confidence評価とソース品質管理
+- **📝 構造化レポート生成**: 引用管理付きエビデンスベースレポート
+- **🌐 多言語インテリジェンス**: 専門用語翻訳システム
+- **⚡ 動的品質管理**: リアルタイム品質評価と自己改善ループ
 
-Deep Research Agents is a next-generation MultiAgent system centered on **Microsoft Semantic Kernel** and **MagenticOrchestration**. It fully automates internal document search, analysis, and report generation specialized for enterprise R&D.
 
-### 🎭 System Overview Diagram
+## 🏗️ アーキテクチャ
+
+Deep Research Agentsは、**Microsoft Semantic Kernel**と**MagenticOrchestration**を中心とした次世代MultiAgentシステムです。企業R\&D向けに特化した内部文書検索、分析、レポート生成を完全自動化します。
+
+### 🎭 システム概要図
 
 ```
                          ┌─────────────────────────────────┐
@@ -72,165 +74,180 @@ Deep Research Agents is a next-generation MultiAgent system centered on **Micros
    └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 🔬 Internal Document Search System
 
-**ModularSearchPlugin** provides comprehensive search capabilities:
+### 🔬 内部文書検索システム
 
-An Azure AI Search integration system dynamically configured based on project settings (`config/project_config.yaml`). It provides unified interface search functionality across multiple indexes defined in configuration files.
+**ModularSearchPlugin**は包括的な検索機能を提供します：
 
-The search system flexibly adapts to enterprise-specific document structures and index configurations, achieving high-precision information retrieval through a combination of Vector search, Semantic search, and Full-text search.
+プロジェクト設定（`config/project_config.yaml`）に基づいて動的に構成されるAzure AI Search統合システム。設定ファイルで定義された複数のインデックスにわたる統一インターフェース検索機能を提供します。
 
-#### 🌐 Web Search Integration
+検索システムは企業固有の文書構造とインデックス設定に柔軟に適応し、Vector検索、Semantic検索、Full-text検索の組み合わせにより高精度な情報検索を実現します。
 
-**Enhanced Research Capabilities**: The system now includes web search functionality as an additional information source and fallback mechanism:
+#### 🌐 Web検索統合
 
-- **Primary Search**: Internal document search via Azure AI Search
-- **Web Search Fallback**: When internal sources are insufficient, the system automatically falls back to web search
-- **Configurable Integration**: Web search can be enabled/disabled and configured via `project_config.yaml`
-- **Quality Assurance**: Web search results undergo the same reliability assessment as internal documents
+**強化された調査機能**: システムには追加の情報源およびフォールバック機能としてWeb検索機能が含まれています：
+
+- **プライマリ検索**: Azure AI Searchによる内部文書検索
+- **Web検索フォールバック**: 内部ソースが不十分な場合、システムは自動的にWeb検索にフォールバック
+- **設定可能な統合**: Web検索は`project_config.yaml`で有効/無効化および設定可能
+- **品質保証**: Web検索結果は内部文書と同じ信頼性評価を受ける
 
 <details>
 <summary>
 
-### 🎭 Specialized Agent Configuration
+### 🎭 専門エージェント構成
 
 </summary>
 
-#### 1. **LeadResearcherAgent** 🎯 *Lead Researcher*
-   - **Role**: Manager and coordinator of multiple internal sub-ResearchAgents
-   - **Architecture**: Contains and orchestrates 3+ sub-ResearchAgents (RESEARCHER1, RESEARCHER2, RESEARCHER3...)
-   - **Special Capability**: Parallel orchestration and concurrent execution of multiple research queries
-   - **Implementation**: Internal agent management via `ConcurrentOrchestration` and `ParallelResearchPlugin`
-   - **Functions**: 
-     - Distributes research queries across sub-ResearchAgents
-     - Aggregates and synthesizes results from multiple agents
-     - Quality management and result integration
-     - Dynamic agent scaling based on workload
-   - **Memory**: Context continuation through Semantic Kernel Memory integration shared across all sub-agents
+#### 1. **LeadResearcherAgent** 🎯 *リードリサーチャー*
+   - **役割**: 複数の内部サブResearchAgentsのマネージャーおよびコーディネーター
+   - **アーキテクチャ**: 3つ以上のサブResearchAgents（RESEARCHER1, RESEARCHER2, RESEARCHER3...）を含み、オーケストレート
+   - **特別な機能**: 複数の調査クエリの並列オーケストレーションと同時実行
+   - **実装**: `ConcurrentOrchestration`と`ParallelResearchPlugin`による内部エージェント管理
+   - **機能**:
+     - サブResearchAgents間での調査クエリの分散
+     - 複数のエージェントからの結果の集約と統合
+     - 品質管理と結果統合
+     - ワークロードに基づく動的エージェントスケーリング
+   - **メモリ**: 全サブエージェント間で共有されるSemantic Kernel Memory統合によるコンテキスト継続
 
-#### 2. **CredibilityCriticAgent** 🔍 *Reliability Assessment Specialist*
-   - **Role**: Scientific evaluation of internal source reliability and coverage
-   - **Evaluation Criteria**: Source quality, information consistency, evidence strength
-   - **Functions**: Supplementation through additional searches, reliability score calculation
-   - **Output**: Structured reliability reports + improvement recommendations
+#### 2. **CredibilityCriticAgent** 🔍 *信頼性評価スペシャリスト*
+   - **役割**: 内部ソースの信頼性とカバレッジの科学的評価
+   - **評価基準**: ソース品質、情報の一貫性、エビデンス強度
+   - **機能**: 追加検索による補強、信頼性スコア計算
+   - **出力**: 構造化信頼性レポート + 改善推奨事項
 
-#### 3. **SummarizerAgent** 📋 *Knowledge Integration Specialist*
-   - **Role**: Structured summarization of large volumes of internal documents
-   - **Specialization**: Classification by enterprise themes, prioritization
-   - **Technology**: Hierarchical summarization, keyword extraction, relevance analysis
-   - **Output**: Structured summaries + key point extraction
+#### 3. **SummarizerAgent** 📋 *知識統合スペシャリスト*
+   - **役割**: 大量の内部文書の構造化要約
+   - **専門分野**: 企業テーマによる分類、優先順位付け
+   - **技術**: 階層要約、キーワード抽出、関連性分析
+   - **出力**: 構造化要約 + キーポイント抽出
 
-#### 4. **ReportWriterAgent** ✍️ *Report Generation Specialist*
-   - **Role**: Final report creation and Confidence score assignment
-   - **Technology**: Structured document generation, citation management, evidence demonstration
-   - **Evaluation**: Multi-axis Confidence evaluation (source quality, consistency, comprehensiveness)
-   - **Output**: Decision support reports + reliability indicators
+#### 4. **ReportWriterAgent** ✍️ *レポート生成スペシャリスト*
+   - **役割**: 最終レポート作成とConfidenceスコア割り当て
+   - **技術**: 構造化文書生成、引用管理、エビデンス実証
+   - **評価**: 多軸Confidence評価（ソース品質、一貫性、包括性）
+   - **出力**: 意思決定支援レポート + 信頼性指標
 
-#### 5. **ReflectionCriticAgent** 🎯 *Quality Assurance Specialist*
-   - **Role**: Validation of report quality and Confidence evaluation validity
-   - **Technology**: Meta-cognitive evaluation, logical consistency checks, improvement recommendations
-   - **Standards**: Compliance with enterprise R&D quality standards
-   - **Output**: Quality evaluation reports + improvement guidance
+#### 5. **ReflectionCriticAgent** 🎯 *品質保証スペシャリスト*
+   - **役割**: レポート品質とConfidence評価妥当性の検証
+   - **技術**: メタ認知評価、論理一貫性チェック、改善推奨
+   - **基準**: 企業R&D品質基準への準拠
+   - **出力**: 品質評価レポート + 改善指導
 
-#### 6. **TranslatorAgent** 🌐 *Multilingual Specialist*
-   - **Role**: High-precision translation with specialized terminology support
-   - **Specialization**: Technical document format preservation, specialized terminology dictionary
-   - **Functions**: Bidirectional Japanese-English translation, context-aware translation
-   - **Quality**: Translation quality evaluation, terminology standardization
+#### 6. **TranslatorAgent** 🌐 *多言語スペシャリスト*
+   - **役割**: 専門用語サポート付き高精度翻訳
+   - **専門分野**: 技術文書フォーマット保持、専門用語辞書
+   - **機能**: 日英双方向翻訳、コンテキスト認識翻訳
+   - **品質**: 翻訳品質評価、用語標準化
 
-#### 7. **CitationAgent** 📚 *Citation Management Specialist*
-   - **Role**: Internal document citation and reference management
-   - **Technology**: Automated citation generation, source traceability
-   - **Verification**: Citation accuracy, source existence confirmation
-   - **Output**: Structured citation lists + metadata
+#### 7. **CitationAgent** 📚 *引用管理スペシャリスト*
+   - **役割**: 内部文書引用と参考文献管理
+   - **技術**: 自動引用生成、ソーストレーサビリティ
+   - **検証**: 引用精度、ソース存在確認
+   - **出力**: 構造化引用リスト + メタデータ
 
 </details>
 
-## 🚀 Setup
+## 🚀 セットアップ
 
-### Prerequisites
+### 前提条件
 
-Before using the Deep Research Agents, ensure you have the following:
+Deep Research Agentsを使用する前に、以下を準備してください：
 
-- **Python 3.12+** (Recommended: 3.12.10 or later)
-- **Azure OpenAI** account with access to:
-  - GPT-4.1, GPT-4.1-mini, o3 or equivalent models
-  - Text embedding models (text-embedding-3-small, text-embedding-3-large, etc.)
-- **Azure AI Search** service with:
-  - Semantic search configuration enabled
-  - Vector search capabilities
-  - Existing search indexes with your enterprise documents
-- **Web Search API** (optional, for web search functionality):
-  - Tavily API key
-  - Currently, this repo only supports Tavily, please implement search providers if you want to use other search engines
+- **Python 3.12+**（推奨：3.12.10以降）
+- 以下にアクセス可能な**Azure OpenAI**アカウント：
+    - GPT-4.1、GPT-4.1-mini、o3または同等モデル
+    - テキスト埋め込みモデル（text-embedding-3-small、text-embedding-3-large等）
+- 以下が設定された**Azure AI Search**サービス：
+    - セマンティック検索設定が有効
+    - ベクター検索機能
+    - 企業文書を含む既存の検索インデックス
+- **Web検索API**（オプション、Web検索機能用）：
+    - Tavily APIキー
+    - 現在、このリポジトリはTavilyのみをサポートしており、他の検索エンジンを使用したい場合は検索プロバイダーを実装してください
 
-### 📦 Installation
 
-Follow these step-by-step instructions to set up the Deep Research Agents:
+### 📦 インストール
 
-#### Step 1: Clone the Repository
+Deep Research Agentsをセットアップするには、以下の手順に従ってください：
+
+#### ステップ1：リポジトリのクローン
+
 ```powershell
 git clone <repository-url>
 cd <directory-name>
 ```
 
-#### Step 2: Create Python Virtual Environment (if needed)
+
+#### ステップ2：Python仮想環境の作成（必要に応じて）
+
 ```powershell
-# Create virtual environment
+# 仮想環境の作成
 python -m venv deepresearchagent
 
-# Activate virtual environment
+# 仮想環境の有効化
 .\deepresearchagent\Scripts\Activate.ps1
 
-# Verify activation (should show the virtual environment path)
+# 有効化の確認（仮想環境のパスが表示されるはず）
 where python
 ```
 
-#### Step 3: Install Python Dependencies
+
+#### ステップ3：Python依存関係のインストール
+
 ```powershell
 pip install -r requirements.txt
 ```
 
-#### Step 4: Create Configuration Files from Templates
 
-**4.1 Create Environment Variables File**
+#### ステップ4：テンプレートから設定ファイルの作成
+
+**4.1 環境変数ファイルの作成**
+
 ```powershell
-# Copy template and create your .env file
+# テンプレートをコピーして.envファイルを作成
 Copy-Item .env.example .env
 ```
-Please update based on your settings
 
-**4.2 Create Project Configuration File**
+設定に基づいて更新してください
+
+**4.2 プロジェクト設定ファイルの作成**
+
 ```powershell
-# Copy template and create your project configuration
+# テンプレートをコピーしてプロジェクト設定を作成
 Copy-Item config\project_config_templates.yaml config\project_config.yaml
-
 ```
-Please update project configuration with your specific settings
 
-**Required configurations in `config/project_config.yaml`:**
-- Company information (system.company)
-- **Azure AI Search index configurations (data_sources.document_types)**
-- Web search settings (data_sources.web_search)
-- Agent behavior parameters (agents)
+特定の設定でプロジェクト設定を更新してください
 
-#### Step 5: Launch the script
+**`config/project_config.yaml`で必要な設定：**
+
+- 会社情報（system.company）
+- **Azure AI Searchインデックス設定（data_sources.document_types）**
+- Web検索設定（data_sources.web_search）
+- エージェント動作パラメータ（agents）
+
+
+#### ステップ5：スクリプトの実行
+
 ```powershell
-# Start the research agent
-python main.py --query "Could you summarize the latest update on Azure OpenAI in 2025?"
+# 調査エージェントの開始
+python main.py --query "2025年のAzure OpenAIの最新アップデートについて要約していただけますか？"
 ```
 
-### 🛠️ Configuration Details
 
-#### Template File Structure
+### 🛠️ 設定詳細
 
-The system uses template files that you need to copy and customize:
+#### テンプレートファイル構造
+
+システムでは、コピーしてカスタマイズする必要があるテンプレートファイルを使用します：
 
 ```
 Deep-Research-Agents/
 ├── config/
-│   ├── project_config_templates.yaml # Template for project configuration
-│   └── project_config.yaml           # Your customized configuration (create this)
-├── .env.example                      # Template for environment variables
-└── .env                              # Your environment variables (create this)
+│   ├── project_config_templates.yaml # プロジェクト設定用テンプレート
+│   └── project_config.yaml           # カスタマイズした設定（作成してください）
+├── .env.example                      # 環境変数用テンプレート
+└── .env                              # 環境変数（作成してください）
 ```
