@@ -1,0 +1,75 @@
+[project]
+name = "deep-research-agents"
+version = "1.0.0"
+description = "企業向け内部文書検索とディープリサーチを自動化するAIエージェントシステム"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Deep Research Agents Team"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    # Core Framework
+    "semantic-kernel==1.32.1",
+    
+    # Search and Web APIs
+    "tavily-python==0.7.5",
+    "azure-search-documents==11.5.2",
+    "azure-identity==1.23.0",
+    "openai==1.86.0",
+    
+    # Configuration and Environment
+    "python-dotenv==1.1.0",
+    
+    # Additional dependencies for enhanced functionality
+    "pydantic>=2.0.0",
+    "aiohttp>=3.8.0",
+    "PyYAML>=6.0",
+    "jinja2>=3.0.0",
+    "markdown>=3.4.0",
+    "beautifulsoup4>=4.11.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py312']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
