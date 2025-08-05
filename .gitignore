@@ -5,3 +5,8 @@ debug_logs/
 agent_logs/
 report*
 config/project_config.yaml
+
+#remove env file avoid push
+.env
+.DS_Store
+.serena/cache/*

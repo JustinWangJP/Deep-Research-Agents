@@ -1,5 +1,5 @@
 """
-Main entry point for Deep Research Agent.
+ディープリサーチエージェントのメインエントリーポイント。
 """
 import argparse
 import asyncio
@@ -16,32 +16,32 @@ from semantic_kernel.utils.logging import setup_logging
 from semantic_kernel.connectors.ai.open_ai import AzureChatPromptExecutionSettings
 
 class ColoredFormatter(logging.Formatter):
-    """Custom formatter that adds colors to log messages based on log level."""
+    """ログレベルに基づいてログメッセージに色を追加するカスタムフォーマッター。"""
     
-    # ANSI color codes
+    # ANSIカラーコード
     COLORS = {
-        'DEBUG': '\033[36m',      # Cyan
-        'INFO': '\033[32m',       # Green
-        'WARNING': '\033[33m',    # Yellow
-        'ERROR': '\033[31m',      # Red
-        'CRITICAL': '\033[35m',   # Magenta
-        'RESET': '\033[0m'        # Reset
+        'DEBUG': '\033[36m',      # シアン
+        'INFO': '\033[32m',       # 緑
+        'WARNING': '\033[33m',    # 黄色
+        'ERROR': '\033[31m',      # 赤
+        'CRITICAL': '\033[35m',   # マゼンタ
+        'RESET': '\033[0m'        # リセット
     }
     
     def format(self, record):
-        """Format log record with colors."""
-        # Get the color for this log level
+        """色付きでログレコードをフォーマットする。"""
+        # このログレベルの色を取得
         color = self.COLORS.get(record.levelname, self.COLORS['RESET'])
         reset = self.COLORS['RESET']
         
-        # Apply color to the level name
+        # レベル名に色を適用
         original_levelname = record.levelname
         record.levelname = f"{color}{record.levelname}{reset}"
         
-        # Format the message
+        # メッセージをフォーマット
         formatted_message = super().format(record)
         
-        # Restore original level name
+        # 元のレベル名を復元
         record.levelname = original_levelname
         
         return formatted_message
