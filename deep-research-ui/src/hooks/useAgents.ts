@@ -1,77 +1,121 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { agentAPI, webSocketService } from '../services';
-import { Agent, AgentStats } from '../types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { agentAPI } from '../services/api';
+import type { AgentInfo, AgentStats } from '../types';
 
 export const useAgents = () => {
   const queryClient = useQueryClient();
-  const [realtimeUpdates, setRealtimeUpdates] = useState<any[]>([]);
+  const [realtimeUpdates] = useState<any[]>([]);
 
-  // Fetch agents
-  const { data: agents = [], isLoading, error } = useQuery({
-    queryKey: ['agents'],
-    queryFn: agentAPI.getAgents,
-    refetchInterval: 5000, // Refresh every 5 seconds
+  // HTTP-first configuration
+  const [useWebSocket, setUseWebSocket] = useState(true);
+  const [httpFallback, setHttpFallback] = useState(false);
+
+  // Check backend availability
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        await agentAPI.getStats();
+      } catch (error: any) {
+        console.warn('Backend unavailable, falling back to HTTP polling');
+        setUseWebSocket(false);
+        setHttpFallback(true);
+      }
+    };
+    checkConnection();
+  }, []);
+
+  // Fetch agents with pagination
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(20);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+
+  const { data: agentsData, isLoading, error } = useQuery({
+    queryKey: ['agents', page, pageSize, statusFilter],
+    queryFn: () => agentAPI.getAgents(page, pageSize, statusFilter),
+    refetchInterval: useWebSocket ? undefined : 3000,
+    staleTime: 2000,
   });
 
   // Fetch agent stats
   const { data: stats } = useQuery({
     queryKey: ['agent-stats'],
     queryFn: agentAPI.getStats,
-    refetchInterval: 10000, // Refresh every 10 seconds
+    refetchInterval: useWebSocket ? 10000 : 5000,
+    staleTime: 5000,
   });
 
-  // WebSocket for real-time updates
-  useEffect(() => {
-    const handleAgentUpdate = (data: any) => {
-      setRealtimeUpdates(prev => [...prev, data]);
-      queryClient.invalidateQueries({ queryKey: ['agents'] });
-      queryClient.invalidateQueries({ queryKey: ['agent-stats'] });
-    };
-
-    webSocketService.onAgentUpdate(handleAgentUpdate);
-    webSocketService.connect();
-
-    return () => {
-      webSocketService.off('agent_update', handleAgentUpdate);
-    };
-  }, [queryClient]);
-
-  // Update agent status (mock implementation)
-  const updateAgentStatus = (agentId: string, status: Agent['status']) => {
-    // This would typically be an API call
+  // Update agent status
+  const updateAgentStatus = (agentId: string, status: AgentInfo['status']) => {
     console.log(`Updating agent ${agentId} status to ${status}`);
+    queryClient.invalidateQueries({ queryKey: ['agents'] });
   };
 
   // Get agent by ID
-  const getAgentById = (agentId: string): Agent | undefined => {
-    return agents.find(agent => agent.id === agentId);
+  const getAgentById = (agentId: string): AgentInfo | undefined => {
+    return agentsData?.agents.find((agent: AgentInfo) => agent.id === agentId);
   };
 
   // Get agents by status
-  const getAgentsByStatus = (status: Agent['status']): Agent[] => {
-    return agents.filter(agent => agent.status === status);
+  const getAgentsByStatus = (status: AgentInfo['status']): AgentInfo[] => {
+    return agentsData?.agents.filter((agent: AgentInfo) => agent.status === status) || [];
+  };
+
+  // Pagination helpers
+  const nextPage = () => {
+    if (agentsData?.has_next) {
+      setPage(prev => prev + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (agentsData?.has_prev) {
+      setPage(prev => Math.max(1, prev - 1));
+    }
+  };
+
+  const goToPage = (pageNum: number) => {
+    setPage(Math.max(1, pageNum));
+  };
+
+  const changeStatusFilter = (status?: string) => {
+    setStatusFilter(status);
+    setPage(1); // Reset to first page when filtering
   };
 
   return {
-    agents,
+    agents: agentsData?.agents || [],
     stats: stats || {} as AgentStats,
+    pagination: {
+      page,
+      pageSize,
+      total: agentsData?.total || 0,
+      totalPages: agentsData?.total_pages || 0,
+      hasNext: agentsData?.has_next || false,
+      hasPrev: agentsData?.has_prev || false,
+      nextPage,
+      prevPage,
+      goToPage,
+    },
     isLoading,
     error,
     realtimeUpdates,
     updateAgentStatus,
     getAgentById,
     getAgentsByStatus,
+    setStatusFilter: changeStatusFilter,
+    useWebSocket,
+    httpFallback,
   };
 };
 
 // Hook for a single agent
 export const useAgent = (agentId: string) => {
   const { agents, updateAgentStatus } = useAgents();
-  const agent = agents.find(a => a.id === agentId);
+  const agent = agents.find((a: AgentInfo) => a.id === agentId);
 
   return {
     agent,
-    updateStatus: (status: Agent['status']) => updateAgentStatus(agentId, status),
+    updateStatus: (status: AgentInfo['status']) => updateAgentStatus(agentId, status),
   };
 };
