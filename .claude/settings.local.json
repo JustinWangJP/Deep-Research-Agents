@@ -11,7 +11,12 @@
       "mcp__serena__write_memory",
       "mcp__serena__think_about_whether_you_are_done",
       "mcp__serena__replace_regex",
-      "mcp__serena__replace_symbol_body"
+      "mcp__serena__replace_symbol_body",
+      "Bash(npm create:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }
