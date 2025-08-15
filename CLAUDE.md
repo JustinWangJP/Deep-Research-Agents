@@ -231,4 +231,3 @@ uv run python -c "from lib.memory.manager import MemoryManager; print('Memory re
 # Test HTTP API
 uv run python -c "import requests; print(requests.get('http://localhost:8000/health').json())"
 ```
-- to memorize
