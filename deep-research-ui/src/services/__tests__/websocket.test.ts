@@ -14,7 +14,6 @@ const mockSocket = {
   on: vi.fn(),
   off: vi.fn(),
   emit: vi.fn(),
-  disconnect: vi.fn(),
 };
 
 const mockIo = vi.fn().mockReturnValue(mockSocket);

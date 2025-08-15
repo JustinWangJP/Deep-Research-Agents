@@ -17,8 +17,19 @@
       "Bash(npm install:*)",
       "Bash(npx tailwindcss:*)",
       "Bash(mkdir:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(rm:*)",
+      "Bash(npm test:*)",
+      "Bash(uv run:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(sed:*)",
+      "Bash(timeout:*)",
+      "Bash(git commit:*)",
+      "Bash(npm run test)",
+      "Bash(npm run test:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }

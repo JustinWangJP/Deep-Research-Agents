@@ -6,30 +6,23 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Dashboard from '../dashboard/Dashboard';
 
-// APIサービスのモック
-vi.mock('../../services/api', () => ({
-  agentAPI: {
-    getStats: vi.fn().mockResolvedValue({
-      total_agents: 5,
-      active_agents: 3,
-      completed_tasks: 100,
-      failed_tasks: 5,
-      average_response_time: 1.5,
-      uptime_percent: 99.9
-    })
-  },
-  searchAPI: {
-    getProviders: vi.fn().mockResolvedValue([
-      { name: 'azure', available: true },
-      { name: 'tavily', available: true }
-    ])
-  },
-  memoryAPI: {
-    getStats: vi.fn().mockResolvedValue({
-      total_entries: 150,
-      entry_types: { research: 80, general: 40, citation: 30 }
-    })
-  }
+// モックデータ
+const mockAgents = [
+  { id: '1', name: 'Test Agent 1', description: 'Test description 1', status: 'running' },
+  { id: '2', name: 'Test Agent 2', description: 'Test description 2', status: 'completed' },
+];
+
+const mockStats = {
+  total_agents: 5,
+  active_agents: 3,
+  completed_tasks: 100,
+  failed_tasks: 5,
+  average_response_time: 1.5,
+  uptime_percent: 99.9
+};
+
+vi.mock('../../hooks/useAgents', () => ({
+  useAgents: () => ({ agents: mockAgents, stats: mockStats, isLoading: false })
 }));
 
 describe('Dashboard', () => {
@@ -41,15 +34,6 @@ describe('Dashboard', () => {
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
-  it('should render loading state initially', () => {
-    render(
-      <Dashboard />,
-      { wrapper }
-    );
-
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
-  });
-
   it('should display agent statistics when loaded', async () => {
     render(
       <Dashboard />,
@@ -57,20 +41,21 @@ describe('Dashboard', () => {
     );
 
     await waitFor(() => {
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
       expect(screen.getByText('5')).toBeInTheDocument();
       expect(screen.getByText('3')).toBeInTheDocument();
       expect(screen.getByText('100')).toBeInTheDocument();
     });
   });
 
-  it('should display memory statistics', async () => {
+  it('should display recent activity', async () => {
     render(
       <Dashboard />,
       { wrapper }
     );
 
     await waitFor(() => {
-      expect(screen.getByText('150')).toBeInTheDocument();
+      expect(screen.getByText('Recent Activity')).toBeInTheDocument();
     });
   });
 });

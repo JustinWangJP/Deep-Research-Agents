@@ -22,7 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 # Add the project root to Python path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from lib.config import get_config
 from lib.search.manager import SearchManager
@@ -135,16 +135,17 @@ async def startup_event():
         config = get_config()
         config.validate()
 
-        search_manager = SearchManager()
-        memory_manager = MemoryManager()
+        search_manager = SearchManager(config)
+        memory_manager = MemoryManager(config, session_id="backend_session")
         citation_manager = CitationManager()
-        memory_plugin = MemoryPlugin()
+        memory_plugin = MemoryPlugin(memory_manager)
 
         agents = await create_agents_with_memory(memory_plugin)
 
         print("✅ Deep Research Agents APIが正常に起動しました")
         print(f"📊 利用可能なエージェント数: {len(agents)}")
-        print(f"🔍 検索プロバイダー: {await search_manager.get_available_providers()}")
+        providers = search_manager.get_available_providers()
+        print(f"🔍 検索プロバイダー: {providers}")
 
     except Exception as e:
         print(f"❌ Failed to initialize services: {e}")
@@ -843,4 +844,4 @@ async def internal_server_error_handler(request, exc):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
+    uvicorn.run("deep-research-ui.backend.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
