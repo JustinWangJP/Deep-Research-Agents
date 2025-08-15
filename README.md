@@ -237,6 +237,33 @@ python main.py --query "2025年のAzure OpenAIの最新アップデートにつ�
 ```
 
 
+### 🚀 FastAPIバックエンド起動
+
+HTTP REST APIとWebSocket対応のFastAPIバックエンドを起動します：
+
+```bash
+# プロジェクトルートディレクトリで実行
+cd /workspaces/Deep-Research-Agents
+
+# 依存関係のインストール
+uv sync
+
+# FastAPIバックエンド起動（開発モード）
+cd deep-research-ui/backend
+uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+# 本番環境での起動
+uv run uvicorn main:app --host 0.0.0.0 --port 8000
+
+# 起動確認
+curl http://localhost:8000/health
+```
+
+**アクセス可能なエンドポイント：**
+- **APIドキュメント**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc  
+- **ヘルスチェック**: http://localhost:8000/health
+
 ### 🛠️ 設定詳細
 
 #### テンプレートファイル構造

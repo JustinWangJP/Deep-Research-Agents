@@ -127,15 +127,15 @@ cd /workspaces/Deep-Research-Agents
 # 依存関係のインストール
 uv sync
 
-# バックエンドサーバー起動
+# バックエンドサーバー起動（推奨方法）
 cd deep-research-ui/backend
+uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+# 別の方法: Pythonで直接起動
 uv run python main.py
 
-# 別の方法: 直接FastAPIを起動
-uv run fastapi dev main.py --host 0.0.0.0 --port 8000
-
 # 本番環境での起動
-uv run fastapi run main.py --host 0.0.0.0 --port 8000
+uv run uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
 ### フロントエンド起動
