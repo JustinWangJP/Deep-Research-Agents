@@ -13,7 +13,7 @@ env:
 jobs:
   backend-tests:
     name: Backend Tests & Lint
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     defaults:
       run:
         working-directory: ./
@@ -69,7 +69,7 @@ jobs:
 
   frontend-tests:
     name: Frontend Tests & Lint
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     defaults:
       run:
         working-directory: ./deep-research-ui
@@ -109,7 +109,7 @@ jobs:
 
   integration-tests:
     name: Integration Tests
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [backend-tests, frontend-tests]
 
     steps:
@@ -135,7 +135,7 @@ jobs:
 
   security-scan:
     name: Security Scan
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
@@ -156,7 +156,7 @@ jobs:
 
   deploy-preview:
     name: Deploy Preview
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [backend-tests, frontend-tests]
     if: github.event_name == 'pull_request'
 
