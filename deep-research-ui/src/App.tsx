@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Header from './components/shared/Header';
 import AgentDashboard from './components/dashboard/AgentDashboard';
-import { webSocketService } from './services/websocket';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,13 +36,6 @@ function App() {
     }
   };
 
-  // Initialize WebSocket connection
-  useEffect(() => {
-    webSocketService.connect();
-    return () => {
-      webSocketService.disconnect();
-    };
-  }, []);
 
   const tabs = [
     { id: 'agents', name: 'Agents', icon: '🤖' },

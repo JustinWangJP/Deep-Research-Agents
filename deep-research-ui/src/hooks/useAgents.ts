@@ -1,29 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { agentAPI } from '../services/api';
 import type { AgentInfo, AgentStats } from '../types';
 
 export const useAgents = () => {
   const queryClient = useQueryClient();
-  const [realtimeUpdates] = useState<unknown[]>([]);
 
-  // HTTP-first configuration
-  const [useWebSocket, setUseWebSocket] = useState(true);
-  const [httpFallback, setHttpFallback] = useState(false);
-
-  // Check backend availability
-  useEffect(() => {
-    const checkConnection = async () => {
-      try {
-        await agentAPI.getStats();
-      } catch {
-        console.warn('Backend unavailable, falling back to HTTP polling');
-        setUseWebSocket(false);
-        setHttpFallback(true);
-      }
-    };
-    checkConnection();
-  }, []);
+  // HTTP-only configuration
+  const [useWebSocket] = useState(false);
+  const [httpFallback] = useState(true);
 
   // Fetch agents with pagination
   const [page, setPage] = useState(1);
@@ -33,7 +18,7 @@ export const useAgents = () => {
   const { data: agentsData, isLoading, error } = useQuery({
     queryKey: ['agents', page, pageSize, statusFilter],
     queryFn: () => agentAPI.getAgents(page, pageSize, statusFilter),
-    refetchInterval: useWebSocket ? undefined : 3000,
+    refetchInterval: 3000,
     staleTime: 2000,
   });
 
@@ -41,7 +26,7 @@ export const useAgents = () => {
   const { data: stats } = useQuery({
     queryKey: ['agent-stats'],
     queryFn: agentAPI.getStats,
-    refetchInterval: useWebSocket ? 10000 : 5000,
+    refetchInterval: 5000,
     staleTime: 5000,
   });
 
@@ -99,7 +84,6 @@ export const useAgents = () => {
     },
     isLoading,
     error,
-    realtimeUpdates,
     updateAgentStatus,
     getAgentById,
     getAgentsByStatus,

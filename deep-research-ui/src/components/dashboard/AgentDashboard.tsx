@@ -2,9 +2,10 @@ import React from 'react';
 import { Activity, Cpu, Clock, AlertCircle } from 'lucide-react';
 import { useAgents } from '../../hooks/useAgents';
 import { cn } from '../../utils/cn';
+import type { AgentInfo } from '../../types';
 
 const AgentDashboard: React.FC = () => {
-  const { agents, stats, isLoading, realtimeUpdates } = useAgents();
+  const { agents, stats, isLoading } = useAgents();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -45,7 +46,7 @@ const AgentDashboard: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Agent Dashboard</h1>
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">{realtimeUpdates.length} updates</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">Live Status</span>
         </div>
       </div>
 
@@ -106,7 +107,7 @@ const AgentDashboard: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Agents Overview</h2>
         </div>
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
-          {agents.map((agent) => (
+          {agents.map((agent: AgentInfo) => (
             <div key={agent.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
@@ -125,7 +126,7 @@ const AgentDashboard: React.FC = () => {
                     <span>{agent.status}</span>
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {agent.lastActivity ? new Date(agent.lastActivity).toLocaleTimeString() : 'Never'}
+                    {agent.last_activity ? new Date(agent.last_activity).toLocaleTimeString() : 'Never'}
                   </div>
                 </div>
               </div>
@@ -134,26 +135,6 @@ const AgentDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Real-time Updates */}
-      {realtimeUpdates.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Real-time Updates</h2>
-          </div>
-          <div className="max-h-64 overflow-y-auto">
-            {realtimeUpdates.slice(-10).reverse().map((update, index) => (
-              <div key={index} className="px-6 py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
-                <div className="text-xs text-gray-600 dark:text-gray-400">
-                  {new Date().toLocaleTimeString()}
-                </div>
-                <div className="text-sm text-gray-900 dark:text-white">
-                  {JSON.stringify(update, null, 2)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -27,7 +27,11 @@
       "Bash(timeout:*)",
       "Bash(git commit:*)",
       "Bash(npm run test)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(curl:*)",
+      "Bash(python:*)",
+      "Bash(pkill:*)",
+      "Bash(true)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
