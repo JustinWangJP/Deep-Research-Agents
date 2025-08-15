@@ -5,7 +5,7 @@ import type { AgentInfo, AgentStats } from '../types';
 
 export const useAgents = () => {
   const queryClient = useQueryClient();
-  const [realtimeUpdates] = useState<any[]>([]);
+  const [realtimeUpdates] = useState<unknown[]>([]);
 
   // HTTP-first configuration
   const [useWebSocket, setUseWebSocket] = useState(true);
@@ -16,7 +16,7 @@ export const useAgents = () => {
     const checkConnection = async () => {
       try {
         await agentAPI.getStats();
-      } catch (error: any) {
+      } catch {
         console.warn('Backend unavailable, falling back to HTTP polling');
         setUseWebSocket(false);
         setHttpFallback(true);

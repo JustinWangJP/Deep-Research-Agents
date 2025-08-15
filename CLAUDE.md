@@ -39,40 +39,19 @@ uv run mypy .
 ## 🏗️ Architecture Overview
 
 ### System Architecture
-This is a **Microsoft Semantic Kernel**-based multi-agent research system that orchestrates specialized AI agents for enterprise document research. The system uses **MagenticOrchestration** for dynamic agent coordination.
+This is a **Microsoft Semantic Kernel**-based multi-agent research system with a **HTTP-first React frontend** and **FastAPI backend**. The system uses **MagenticOrchestration** for dynamic agent coordination and provides a comprehensive REST API with OpenAPI documentation.
 
-### Key Components
-
-#### 1. **Agent Layer** (`lib/agent_factory.py`)
-- **LeadResearcherAgent**: Main orchestrator managing 3+ internal research agents
-- **CredibilityCriticAgent**: Source quality assessment
-- **SummarizerAgent**: Knowledge synthesis from documents
-- **ReportWriterAgent**: Final report generation with citations
-- **ReflectionCriticAgent**: Quality validation
-- **TranslatorAgent**: Japanese-English translation
-- **CitationAgent**: Reference management
-
-#### 2. **Search System** (`lib/search/`)
-- **ModularSearchPlugin**: Azure AI Search integration for internal documents
-- **WebSearchProvider**: Tavily API for web search fallback
-- **SearchManager**: Unified search interface across multiple indexes
-
-#### 3. **Memory System** (`lib/memory/`)
-- **MemoryManager**: Semantic Kernel Memory for persistent context
-- **SharedMemoryPlugin**: Cross-agent memory sharing
-- **MemoryPlugin**: Research context storage and retrieval
-
-#### 4. **Orchestration Layer** (`lib/orchestration/`)
-- **LeadResearcherAgent**: Internal multi-agent coordination
-- **ParallelResearchPlugin**: Concurrent research execution
-- **ResearchExecutor**: Research workflow management
-- **TemperatureManager**: LLM temperature variation strategies
+### Communication Protocols
+- **Primary**: HTTP REST API (`/api/v1/*`)
+- **Secondary**: WebSocket for optional real-time updates
+- **Fallback**: Automatic HTTP polling when WebSocket unavailable
 
 ## 📁 Directory Structure
 
+### Core Research System
 ```
-├── main.py                          # Entry point
-├── lib/
+├── main.py                          # Entry point for research agent
+├── lib/                            # Core agent system
 │   ├── agent_factory.py            # Agent creation factory
 │   ├── config.py                   # Configuration management
 │   ├── util.py                     # Utility functions
@@ -86,6 +65,29 @@ This is a **Microsoft Semantic Kernel**-based multi-agent research system that o
 │   ├── project_config.yaml         # Your project configuration
 │   └── project_config_templates.yaml # Configuration template
 └── pyproject.toml                  # Dependencies and tooling
+```
+
+### React UI System
+```
+deep-research-ui/
+├── backend/
+│   ├── main.py                     # FastAPI HTTP server
+│   └── models.py                   # Pydantic API models
+├── src/
+│   ├── components/
+│   │   ├── dashboard/
+│   │   ├── search/
+│   │   ├── memory/
+│   │   └── citations/
+│   ├── services/
+│   │   ├── api.ts                  # HTTP API client
+│   │   └── websocket.ts            # WebSocket client
+│   ├── hooks/
+│   │   └── useAgents.ts            # React Query hooks
+│   ├── types/
+│   │   └── index.ts                # TypeScript interfaces
+│   └── utils/
+└── package.json                    # Frontend dependencies
 ```
 
 ## 🔧 Configuration
@@ -138,6 +140,9 @@ uv run pytest tests/test_search.py
 
 # Run with coverage
 uv run pytest --cov=lib
+
+# Frontend tests
+cd deep-research-ui && npm test
 ```
 
 ## 🔍 Debugging
@@ -215,11 +220,15 @@ DEBUG_MODE=true uv run python main.py --query "test question"
 ### Debug Commands
 ```bash
 # Check configuration
-python -c "from lib.config import get_config; print(get_config().validate())"
+uv run python -c "from lib.config import get_config; print(get_config().validate())"
 
 # Test search
-python -c "from lib.search import ModularSearchPlugin; print('Search ready')"
+uv run python -c "from lib.search.manager import SearchManager; print('Search ready')"
 
 # Test memory
-python -c "from lib.memory import MemoryManager; print('Memory ready')"
+uv run python -c "from lib.memory.manager import MemoryManager; print('Memory ready')"
+
+# Test HTTP API
+uv run python -c "import requests; print(requests.get('http://localhost:8000/health').json())"
 ```
+- to memorize

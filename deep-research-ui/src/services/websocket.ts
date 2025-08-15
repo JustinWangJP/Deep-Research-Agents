@@ -1,5 +1,4 @@
 import { io, Socket } from 'socket.io-client';
-import { WebSocketMessage } from '../types';
 
 class WebSocketService {
   private socket: Socket | null = null;
@@ -46,17 +45,17 @@ class WebSocketService {
     }
   }
 
-  on(event: string, callback: (data: any) => void) {
+  on(event: string, callback: (data: unknown) => void) {
     if (!this.socket) return;
     this.socket.on(event, callback);
   }
 
-  off(event: string, callback?: (data: any) => void) {
+  off(event: string, callback?: (data: unknown) => void) {
     if (!this.socket) return;
     this.socket.off(event, callback);
   }
 
-  emit(event: string, data: any) {
+  emit(event: string, data: unknown) {
     if (!this.socket) return;
     this.socket.emit(event, data);
   }
@@ -66,19 +65,19 @@ class WebSocketService {
   }
 
   // Convenience methods for common events
-  onAgentUpdate(callback: (data: any) => void) {
+  onAgentUpdate(callback: (data: unknown) => void) {
     this.on('agent_update', callback);
   }
 
-  onSearchResult(callback: (data: any) => void) {
+  onSearchResult(callback: (data: unknown) => void) {
     this.on('search_result', callback);
   }
 
-  onMemoryUpdate(callback: (data: any) => void) {
+  onMemoryUpdate(callback: (data: unknown) => void) {
     this.on('memory_update', callback);
   }
 
-  onLogMessage(callback: (data: any) => void) {
+  onLogMessage(callback: (data: unknown) => void) {
     this.on('log_message', callback);
   }
 

@@ -1,5 +1,4 @@
 import { httpUtils } from '../api';
-import { agentAPI } from '../api';
 
 // Mock axios for testing
 jest.mock('axios');

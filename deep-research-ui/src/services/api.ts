@@ -1,3 +1,7 @@
+/**
+ * HTTP APIサービス
+ * バックエンドとの通信を抽象化し、エラーハンドリングとリトライ機能を提供
+ */
 import axios from 'axios';
 import type { SearchQuery, SearchResponse, AgentInfo, MemoryEntry, MemoryStats, AgentStats, Citation, CitationCreate, MemoryEntryCreate, ConfigInfo } from '../types';
 
@@ -5,18 +9,19 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api/v1`,
-  timeout: 30000,
+  timeout: 30000, // 30秒のタイムアウト
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add request interceptor for error handling
+// リクエストインターセプター - エラーハンドリング
+// 429（レート制限）エラーに対して指数バックオフを実装
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 429) {
-      // Rate limit - implement exponential backoff
+      // レート制限エラー - 指数バックオフでリトライ
       return new Promise((resolve) => {
         setTimeout(() => resolve(api.request(error.config)), 1000);
       });
@@ -25,18 +30,31 @@ api.interceptors.response.use(
   }
 );
 
-// Search API
+// 検索API - ドキュメント検索関連のエンドポイント
 export const searchAPI = {
+  /**
+   * 検索クエリを実行
+   * @param query 検索クエリオブジェクト
+   * @returns 検索結果
+   */
   search: async (query: SearchQuery): Promise<SearchResponse> => {
     const response = await api.post('/search', query);
     return response.data;
   },
 
+  /**
+   * 利用可能な検索プロバイダーを取得
+   * @returns 検索プロバイダーリスト
+   */
   getProviders: async () => {
     const response = await api.get('/search/providers');
     return response.data;
   },
 
+  /**
+   * 利用可能なドキュメントタイプを取得
+   * @returns ドキュメントタイプリスト
+   */
   getDocumentTypes: async () => {
     const response = await api.get('/search/document-types');
     return response.data;
@@ -64,7 +82,7 @@ export const memoryAPI = {
       query,
       page: page.toString(),
       page_size: page_size.toString(),
-      ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== undefined))
+      ...Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== undefined))
     });
     
     const response = await api.get(`/memory?${params.toString()}`);
@@ -101,7 +119,7 @@ export const citationAPI = {
     const params = new URLSearchParams({
       page: page.toString(),
       page_size: page_size.toString(),
-      ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== undefined))
+      ...Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== undefined))
     });
     
     const response = await api.get(`/citations?${params.toString()}`);

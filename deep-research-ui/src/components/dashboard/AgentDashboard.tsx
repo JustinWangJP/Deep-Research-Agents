@@ -49,7 +49,7 @@ const AgentDashboard: React.FC = () => {
         </div>
       </div>
 
-      <!-- Stats Cards -->
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div className="flex items-center">
@@ -100,7 +100,7 @@ const AgentDashboard: React.FC = () => {
         </div>
       </div>
 
-      <!-- Agents List -->
+      {/* Agents List */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Agents Overview</h2>
@@ -134,7 +134,7 @@ const AgentDashboard: React.FC = () => {
         </div>
       </div>
 
-      <!-- Real-time Updates -->
+      {/* Real-time Updates */}
       {realtimeUpdates.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">

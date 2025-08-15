@@ -8,7 +8,7 @@ export interface SearchResult {
   url?: string;
   score: number;
   confidence: number;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   highlights?: Record<string, string[]>;
   created_at?: string;
 }
@@ -22,7 +22,7 @@ export interface AgentInfo {
   last_activity?: string;
   plugins: string[];
   temperature?: number;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
 }
 
 export interface AgentStats {
@@ -40,7 +40,7 @@ export interface MemoryEntry {
   entry_type: 'general' | 'research' | 'citation' | 'agent_communication' | 'system';
   source: string;
   memory_type: 'session' | 'persistent' | 'temporary';
-  additional_metadata?: Record<string, any>;
+  additional_metadata?: Record<string, unknown>;
   tags: string[];
   created_at: string;
   updated_at: string;
@@ -52,7 +52,7 @@ export interface MemoryEntryCreate {
   entry_type: 'general' | 'research' | 'citation' | 'agent_communication' | 'system';
   source: string;
   memory_type: 'session' | 'persistent' | 'temporary';
-  additional_metadata?: Record<string, any>;
+  additional_metadata?: Record<string, unknown>;
   tags?: string[];
 }
 
@@ -74,7 +74,7 @@ export interface Citation {
   page_number?: number;
   confidence: number;
   tags: string[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -87,7 +87,7 @@ export interface CitationCreate {
   page_number?: number;
   confidence?: number;
   tags?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface SearchQuery {
@@ -97,7 +97,7 @@ export interface SearchQuery {
   max_results?: number;
   include_web?: boolean;
   temperature?: 'conservative' | 'balanced' | 'creative';
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }
 
 export interface SearchResponse {
@@ -155,7 +155,7 @@ export interface ResearchTask {
   temperature: 'conservative' | 'balanced' | 'creative';
   status: 'created' | 'running' | 'completed' | 'failed';
   progress: number;
-  results?: any[];
+  results?: unknown[];
   created_at: string;
   started_at?: string;
   completed_at?: string;
@@ -202,7 +202,7 @@ export interface AgentMessage {
 
 export interface WebSocketMessage {
   type: 'agent_update' | 'search_result' | 'memory_update' | 'log_message';
-  payload: any;
+  payload: unknown;
   timestamp: string;
 }
 
@@ -228,7 +228,7 @@ export interface ResearchTask {
   temperature: 'conservative' | 'balanced' | 'creative';
   status: 'created' | 'running' | 'completed' | 'failed';
   progress: number;
-  results?: any[];
+  results?: unknown[];
   created_at: string;
   started_at?: string;
   completed_at?: string;
