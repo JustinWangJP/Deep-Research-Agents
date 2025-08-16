@@ -1,36 +1,34 @@
 {
-  "agentDashboard": {
-    "title": "Agent Dashboard",
-    "subtitle": "Monitor and manage your AI research agents",
-    "systemOnline": "System Online"
-  },
-  "recentActivity": "Recent Activity",
-  "stats": {
-    "totalAgents": "Total Agents",
-    "activeAgents": "Active Agents",
-    "completedTasks": "Completed Tasks",
-    "failedTasks": "Failed Tasks",
-    "memoryUsage": "Memory Usage",
-    "avgResponseTime": "Avg Response Time",
-    "systemPerformance": "System Performance",
-    "agentStatus": "Agent Status",
-    "running": "Running",
-    "completed": "Completed",
-    "error": "Error",
-    "idle": "Idle"
-  },
-  "agentsList": {
+  "title": "Agent Management",
+  "subtitle": "Manage and monitor your AI research agents",
+  "list": {
     "title": "Agents Overview",
     "subtitle": "Manage and monitor your AI research agents",
+    "empty": "No agents available",
     "lastActivity": "Last Activity",
     "noActivity": "No activity",
     "plugins": "Plugins"
   },
+  "details": {
+    "information": "Information",
+    "configuration": "Configuration",
+    "performance": "Performance",
+    "logs": "Logs"
+  },
+  "actions": {
+    "start": "Start",
+    "stop": "Stop",
+    "restart": "Restart",
+    "configure": "Configure",
+    "viewLogs": "View Logs",
+    "delete": "Delete"
+  },
   "status": {
+    "idle": "Idle",
     "running": "Running",
     "completed": "Completed",
     "error": "Error",
-    "idle": "Idle"
+    "paused": "Paused"
   },
   "plugins": {
     "web_search": "Web Search",

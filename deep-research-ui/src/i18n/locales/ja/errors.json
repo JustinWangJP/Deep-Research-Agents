@@ -1,0 +1,27 @@
+{
+  "network": {
+    "offline": "現在オフラインです",
+    "timeout": "リクエストがタイムアウトしました",
+    "serverError": "サーバーエラーが発生しました",
+    "notFound": "リソースが見つかりません",
+    "unauthorized": "認証されていないアクセスです",
+    "forbidden": "アクセスが禁止されています"
+  },
+  "validation": {
+    "required": "必須項目が入力されていません",
+    "invalid": "無効な入力です",
+    "tooShort": "入力が短すぎます",
+    "tooLong": "入力が長すぎます"
+  },
+  "api": {
+    "agentNotFound": "エージェントが見つかりません",
+    "searchFailed": "検索操作に失敗しました",
+    "memoryError": "メモリ操作に失敗しました",
+    "citationError": "引用操作に失敗しました"
+  },
+  "generic": {
+    "unknown": "不明なエラーが発生しました",
+    "tryAgain": "もう一度お試しください",
+    "contactSupport": "問題が解決しない場合はサポートにお問い合わせください"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "引用管理",
+  "subtitle": "研究引用と参考文献の管理",
+  "list": {
+    "title": "引用",
+    "empty": "引用が見つかりません",
+    "loading": "引用を読み込み中..."
+  },
+  "citation": {
+    "content": "コンテンツ",
+    "sourceTitle": "ソースタイトル",
+    "sourceUrl": "ソースURL",
+    "caseNumber": "ケース番号",
+    "pageNumber": "ページ番号",
+    "confidence": "信頼度",
+    "tags": "タグ",
+    "metadata": "メタデータ",
+    "createdAt": "作成日時",
+    "updatedAt": "更新日時"
+  },
+  "actions": {
+    "add": "引用を追加",
+    "edit": "引用を編集",
+    "delete": "引用を削除",
+    "copy": "引用をコピー",
+    "export": "引用をエクスポート",
+    "import": "引用をインポート"
+  },
+  "filters": {
+    "caseNumber": "ケース番号でフィルター",
+    "sourceTitle": "ソースタイトルでフィルター",
+    "tags": "タグでフィルター",
+    "confidence": "信頼度でフィルター"
+  },
+  "formats": {
+    "apa": "APA形式",
+    "mla": "MLA形式",
+    "chicago": "シカゴ形式",
+    "harvard": "ハーバード形式"
+  }
+}

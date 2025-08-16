@@ -1,0 +1,41 @@
+{
+  "title": "Citation Management",
+  "subtitle": "Manage research citations and references",
+  "list": {
+    "title": "Citations",
+    "empty": "No citations found",
+    "loading": "Loading citations..."
+  },
+  "citation": {
+    "content": "Content",
+    "sourceTitle": "Source Title",
+    "sourceUrl": "Source URL",
+    "caseNumber": "Case Number",
+    "pageNumber": "Page Number",
+    "confidence": "Confidence",
+    "tags": "Tags",
+    "metadata": "Metadata",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At"
+  },
+  "actions": {
+    "add": "Add Citation",
+    "edit": "Edit Citation",
+    "delete": "Delete Citation",
+    "copy": "Copy Citation",
+    "export": "Export Citations",
+    "import": "Import Citations"
+  },
+  "filters": {
+    "caseNumber": "Filter by Case Number",
+    "sourceTitle": "Filter by Source Title",
+    "tags": "Filter by Tags",
+    "confidence": "Filter by Confidence"
+  },
+  "formats": {
+    "apa": "APA Format",
+    "mla": "MLA Format",
+    "chicago": "Chicago Format",
+    "harvard": "Harvard Format"
+  }
+}

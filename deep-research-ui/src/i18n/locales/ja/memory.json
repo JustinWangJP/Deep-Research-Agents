@@ -1,0 +1,47 @@
+{
+  "title": "メモリ管理",
+  "subtitle": "エージェントメモリと知識ベースの管理",
+  "list": {
+    "title": "メモリエントリ",
+    "empty": "メモリエントリが見つかりません",
+    "loading": "メモリエントリを読み込み中..."
+  },
+  "entry": {
+    "content": "コンテンツ",
+    "type": "エントリタイプ",
+    "source": "ソース",
+    "memoryType": "メモリタイプ",
+    "tags": "タグ",
+    "createdAt": "作成日時",
+    "updatedAt": "更新日時",
+    "relevanceScore": "関連性スコア"
+  },
+  "types": {
+    "general": "一般",
+    "research": "研究",
+    "citation": "引用",
+    "agent_communication": "エージェント通信",
+    "system": "システム"
+  },
+  "memoryTypes": {
+    "session": "セッション",
+    "persistent": "永続",
+    "temporary": "一時的"
+  },
+  "actions": {
+    "add": "エントリを追加",
+    "edit": "エントリを編集",
+    "delete": "エントリを削除",
+    "search": "メモリを検索",
+    "filter": "エントリをフィルター",
+    "export": "メモリをエクスポート"
+  },
+  "stats": {
+    "totalEntries": "総エントリ数",
+    "entryTypes": "エントリタイプ",
+    "sources": "ソース",
+    "memoryTypes": "メモリタイプ",
+    "tags": "タグ",
+    "storageSize": "ストレージサイズ"
+  }
+}

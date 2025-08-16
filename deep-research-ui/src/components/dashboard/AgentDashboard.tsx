@@ -8,6 +8,8 @@ import type { AgentInfo } from '../../types';
 const AgentDashboard: React.FC = () => {
   const { t } = useTranslation(['dashboard', 'common']);
   const { agents, stats, isLoading } = useAgents();
+  
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -146,11 +148,15 @@ const AgentDashboard: React.FC = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">{t('stats.memoryUsage')}</span>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">{stats.total_memory_usage || 'N/A'}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                {stats.total_memory_usage || 'N/A'}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">{t('stats.avgResponseTime')}</span>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">{stats.average_response_time || 'N/A'}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                {stats.average_response_time ? `${stats.average_response_time}ms` : 'N/A'}
+              </span>
             </div>
           </div>
         </div>
@@ -168,19 +174,19 @@ const AgentDashboard: React.FC = () => {
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">{t('stats.running')}</span>
               <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                {agents.filter(a => a.status === 'running').length}
+                {agents.filter((a: AgentInfo) => a.status === 'running').length}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">{t('stats.completed')}</span>
               <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                {agents.filter(a => a.status === 'completed').length}
+                {agents.filter((a: AgentInfo) => a.status === 'completed').length}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">{t('stats.error')}</span>
               <span className="text-sm font-medium text-red-600 dark:text-red-400">
-                {agents.filter(a => a.status === 'error').length}
+                {agents.filter((a: AgentInfo) => a.status === 'error').length}
               </span>
             </div>
           </div>
@@ -196,47 +202,65 @@ const AgentDashboard: React.FC = () => {
           </p>
         </div>
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
-          {agents.map((agent: AgentInfo) => (
-            <div key={agent.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">{agent.name}</h3>
-                    <div className={cn(
-                      "flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium",
-                      getStatusColor(agent.status)
-                    )}>
-                      {getStatusIcon(agent.status)}
-                      <span className="capitalize">{t(`status.${agent.status}`)}</span>
+          {agents.map((agent: AgentInfo) => {
+            // エージェント名のマッピング（APIから返される名前とi18nキーの対応）
+            const agentNameMapping: { [key: string]: string } = {
+              'LeadResearcherAgent': 'leadResearcherAgent',
+              'CredibilityCriticAgent': 'credibilityCriticAgent',
+              'CitationAgent': 'citationAgent',
+              'ReportWriterAgent': 'reportWriterAgent',
+              'TranslatorAgent': 'translatorAgent',
+              'ReflectionCriticAgent': 'reflectionCriticAgent'
+            };
+            
+            const mappedKey = agentNameMapping[agent.name] || agent.name;
+            
+            return (
+              <div key={agent.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                        {t(`agents.${mappedKey}.name`, { defaultValue: agent.name })}
+                      </h3>
+                      <div className={cn(
+                        "flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium",
+                        getStatusColor(agent.status)
+                      )}>
+                        {getStatusIcon(agent.status)}
+                        <span className="capitalize">{t(`status.${agent.status}`)}</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      {t(`agents.${mappedKey}.description`, { defaultValue: agent.description || '' })}
+                    </p>
+                    <div className="mt-2 flex items-center space-x-2">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{t('agentsList.plugins')}:</span>
+                      <div className="flex space-x-1">
+                        {agent.plugins.map((plugin, index) => (
+                          <span key={index} className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                            {getPluginIcon(plugin)} {getPluginName(plugin)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{agent.description}</p>
-                  <div className="mt-2 flex items-center space-x-2">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{t('agentsList.plugins')}:</span>
-                    <div className="flex space-x-1">
-                      {agent.plugins.map((plugin, index) => (
-                        <span key={index} className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                          {getPluginIcon(plugin)} {getPluginName(plugin)}
-                        </span>
-                      ))}
+                  <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {agent.last_activity ? (
+                        <>
+                          <div>{t('agentsList.lastActivity')}</div>
+                          <div className="font-medium">{new Date(agent.last_activity).toLocaleTimeString()}</div>
+                        </>
+                      ) : (
+                        <div className="text-gray-400">{t('agentsList.noActivity')}</div>
+                      )}
                     </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {agent.last_activity ? (
-                      <>
-                        <div>{t('agentsList.lastActivity')}</div>
-                        <div className="font-medium">{new Date(agent.last_activity).toLocaleTimeString()}</div>
-                      </>
-                    ) : (
-                      <div className="text-gray-400">{t('agentsList.noActivity')}</div>
-                    )}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

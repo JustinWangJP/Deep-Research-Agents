@@ -1,0 +1,47 @@
+{
+  "title": "Memory Management",
+  "subtitle": "Manage agent memory and knowledge base",
+  "list": {
+    "title": "Memory Entries",
+    "empty": "No memory entries found",
+    "loading": "Loading memory entries..."
+  },
+  "entry": {
+    "content": "Content",
+    "type": "Entry Type",
+    "source": "Source",
+    "memoryType": "Memory Type",
+    "tags": "Tags",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "relevanceScore": "Relevance Score"
+  },
+  "types": {
+    "general": "General",
+    "research": "Research",
+    "citation": "Citation",
+    "agent_communication": "Agent Communication",
+    "system": "System"
+  },
+  "memoryTypes": {
+    "session": "Session",
+    "persistent": "Persistent",
+    "temporary": "Temporary"
+  },
+  "actions": {
+    "add": "Add Entry",
+    "edit": "Edit Entry",
+    "delete": "Delete Entry",
+    "search": "Search Memory",
+    "filter": "Filter Entries",
+    "export": "Export Memory"
+  },
+  "stats": {
+    "totalEntries": "Total Entries",
+    "entryTypes": "Entry Types",
+    "sources": "Sources",
+    "memoryTypes": "Memory Types",
+    "tags": "Tags",
+    "storageSize": "Storage Size"
+  }
+}

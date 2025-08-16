@@ -116,7 +116,10 @@ class AgentStats(BaseModel):
     completed_tasks: int = Field(0, description="Total completed tasks")
     failed_tasks: int = Field(0, description="Total failed tasks")
     average_response_time: float = Field(
-        0.0, description="Average response time in seconds"
+        0.0, description="Average response time in milliseconds"
+    )
+    total_memory_usage: Optional[str] = Field(
+        None, description="System memory usage information"
     )
     uptime_percent: float = Field(
         100.0, ge=0.0, le=100.0, description="System uptime percentage"

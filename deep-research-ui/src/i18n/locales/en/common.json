@@ -7,16 +7,26 @@
   "navigation": {
     "dashboard": "Dashboard",
     "agents": "Agents",
+    "search": "Search",
     "memory": "Memory",
-    "citations": "Citations"
+    "citations": "Citations",
+    "agentsDescription": "Manage AI agents",
+    "searchDescription": "Search research data",
+    "memoryDescription": "Explore agent memory",
+    "citationsDescription": "Manage citations"
   },
   "common": {
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
-    "cancel": "Cancel",
-    "save": "Save",
+    "create": "Create",
+    "read": "Read",
+    "update": "Update",
     "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "reset": "Reset",
     "edit": "Edit",
     "view": "View",
     "search": "Search",
@@ -32,6 +42,28 @@
     "previous": "Previous",
     "refresh": "Refresh",
     "settings": "Settings",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "comingSoon": "Coming Soon",
+    "searchInterfaceDescription": "The search interface is under development. Check back soon for advanced research capabilities!",
+    "searchFeatures": "🚀 Features in development: Semantic search, filters, and result visualization",
+    "memoryInterfaceDescription": "The memory explorer is under development. Check back soon for agent memory insights!",
+    "memoryFeatures": "🧠 Features in development: Memory visualization, search, and analysis tools",
+    "citationsInterfaceDescription": "The citation manager is under development. Check back soon for citation management!",
+    "citationsFeatures": "📚 Features in development: Citation tracking, export, and bibliography generation"
+  },
+  "status": {
+    "idle": "Idle",
+    "running": "Running",
+    "completed": "Completed",
+    "error": "Error",
+    "paused": "Paused"
+  },
+  "dateTime": {
+    "now": "Now",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "lastWeek": "Last Week",
+    "lastMonth": "Last Month",
+    "never": "Never"
   }
 }

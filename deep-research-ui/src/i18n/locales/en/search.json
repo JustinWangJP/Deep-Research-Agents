@@ -1,0 +1,53 @@
+{
+  "title": "Search Interface",
+  "subtitle": "Search through research documents and data",
+  "form": {
+    "query": {
+      "label": "Search Query",
+      "placeholder": "Enter your search query...",
+      "required": "Search query is required"
+    },
+    "documentType": {
+      "label": "Document Type",
+      "placeholder": "Select document type",
+      "all": "All Types"
+    },
+    "provider": {
+      "label": "Search Provider",
+      "azure": "Azure Search",
+      "tavily": "Tavily Search",
+      "internal": "Internal Search"
+    },
+    "maxResults": {
+      "label": "Maximum Results"
+    },
+    "temperature": {
+      "label": "Search Temperature",
+      "conservative": "Conservative",
+      "balanced": "Balanced",
+      "creative": "Creative"
+    },
+    "includeWeb": {
+      "label": "Include Web Results"
+    }
+  },
+  "results": {
+    "title": "Search Results",
+    "empty": "No results found",
+    "loading": "Searching...",
+    "error": "Search failed",
+    "totalResults": "Total Results",
+    "executionTime": "Execution Time",
+    "provider": "Provider",
+    "score": "Score",
+    "confidence": "Confidence",
+    "source": "Source",
+    "highlights": "Highlights"
+  },
+  "actions": {
+    "search": "Search",
+    "clear": "Clear",
+    "export": "Export Results",
+    "saveQuery": "Save Query"
+  }
+}

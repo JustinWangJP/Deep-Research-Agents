@@ -1,0 +1,53 @@
+{
+  "title": "検索インターフェース",
+  "subtitle": "研究文書とデータを検索",
+  "form": {
+    "query": {
+      "label": "検索クエリ",
+      "placeholder": "検索クエリを入力してください...",
+      "required": "検索クエリは必須です"
+    },
+    "documentType": {
+      "label": "文書タイプ",
+      "placeholder": "文書タイプを選択",
+      "all": "すべてのタイプ"
+    },
+    "provider": {
+      "label": "検索プロバイダー",
+      "azure": "Azure検索",
+      "tavily": "Tavily検索",
+      "internal": "内部検索"
+    },
+    "maxResults": {
+      "label": "最大結果数"
+    },
+    "temperature": {
+      "label": "検索温度",
+      "conservative": "保守的",
+      "balanced": "バランス",
+      "creative": "創造的"
+    },
+    "includeWeb": {
+      "label": "ウェブ結果を含む"
+    }
+  },
+  "results": {
+    "title": "検索結果",
+    "empty": "結果が見つかりません",
+    "loading": "検索中...",
+    "error": "検索に失敗しました",
+    "totalResults": "総結果数",
+    "executionTime": "実行時間",
+    "provider": "プロバイダー",
+    "score": "スコア",
+    "confidence": "信頼度",
+    "source": "ソース",
+    "highlights": "ハイライト"
+  },
+  "actions": {
+    "search": "検索",
+    "clear": "クリア",
+    "export": "結果をエクスポート",
+    "saveQuery": "クエリを保存"
+  }
+}

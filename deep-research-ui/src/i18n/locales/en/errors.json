@@ -1,0 +1,27 @@
+{
+  "network": {
+    "offline": "You are currently offline",
+    "timeout": "Request timed out",
+    "serverError": "Server error occurred",
+    "notFound": "Resource not found",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden"
+  },
+  "validation": {
+    "required": "Required field is missing",
+    "invalid": "Invalid input",
+    "tooShort": "Input is too short",
+    "tooLong": "Input is too long"
+  },
+  "api": {
+    "agentNotFound": "Agent not found",
+    "searchFailed": "Search operation failed",
+    "memoryError": "Memory operation failed",
+    "citationError": "Citation operation failed"
+  },
+  "generic": {
+    "unknown": "An unknown error occurred",
+    "tryAgain": "Please try again",
+    "contactSupport": "Please contact support if the problem persists"
+  }
+}
