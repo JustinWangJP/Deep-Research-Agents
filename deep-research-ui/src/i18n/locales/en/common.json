@@ -1,0 +1,37 @@
+{
+  "app": {
+    "title": "Deep Research Agents",
+    "subtitle": "AI-Powered Research Platform",
+    "systemOnline": "System Online"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "agents": "Agents",
+    "memory": "Memory",
+    "citations": "Citations"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "refresh": "Refresh",
+    "settings": "Settings",
+    "recentActivity": "Recent Activity"
+  }
+}

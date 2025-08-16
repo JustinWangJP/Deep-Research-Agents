@@ -17,17 +17,14 @@ classifiers = [
 ]
 dependencies = [
     # Core Framework
-    "semantic-kernel==1.32.1",
-    
+    "semantic-kernel>=1.32.1",
     # Search and Web APIs
-    "tavily-python==0.7.5",
-    "azure-search-documents==11.5.2",
-    "azure-identity==1.23.0",
-    "openai==1.86.0",
-    
+    "tavily-python>=0.7.5",
+    "azure-search-documents>=11.5.2",
+    "azure-identity>=1.23.0",
+    "openai>=1.86.0",
     # Configuration and Environment
-    "python-dotenv==1.1.0",
-    
+    "python-dotenv>=1.1.0",
     # Additional dependencies for enhanced functionality
     "pydantic>=2.0.0",
     "aiohttp>=3.8.0",
@@ -35,6 +32,12 @@ dependencies = [
     "jinja2>=3.0.0",
     "markdown>=3.4.0",
     "beautifulsoup4>=4.11.0",
+    # FastAPI Backend Dependencies
+    "fastapi[standard]>=0.115.5",
+    "uvicorn[standard]>=0.24.0",
+    "litellm[proxy]>=1.75.7",
+    "python-socketio>=5.10.0",
+    "websockets>=12.0",
 ]
 
 [project.optional-dependencies]
@@ -46,6 +49,7 @@ dev = [
     "flake8>=6.0.0",
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
+    "httpx>=0.25.0",
 ]
 
 [tool.uv]
@@ -57,7 +61,12 @@ dev-dependencies = [
     "flake8>=6.0.0",
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
+    "httpx>=0.25.0",
 ]
+
+[project.scripts]
+dev = "uvicorn deep-research-ui.backend.main:app --reload --host 0.0.0.0 --port 8000"
+start = "uvicorn deep-research-ui.backend.main:app --host 0.0.0.0 --port 8000"
 
 [tool.black]
 line-length = 88

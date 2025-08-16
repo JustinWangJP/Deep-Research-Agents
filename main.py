@@ -1,5 +1,5 @@
 """
-Main entry point for Deep Research Agent.
+ディープリサーチエージェントのメインエントリーポイント。
 """
 import argparse
 import asyncio
@@ -16,32 +16,32 @@ from semantic_kernel.utils.logging import setup_logging
 from semantic_kernel.connectors.ai.open_ai import AzureChatPromptExecutionSettings
 
 class ColoredFormatter(logging.Formatter):
-    """Custom formatter that adds colors to log messages based on log level."""
+    """ログレベルに基づいてログメッセージに色を追加するカスタムフォーマッター。"""
     
-    # ANSI color codes
+    # ANSIカラーコード
     COLORS = {
-        'DEBUG': '\033[36m',      # Cyan
-        'INFO': '\033[32m',       # Green
-        'WARNING': '\033[33m',    # Yellow
-        'ERROR': '\033[31m',      # Red
-        'CRITICAL': '\033[35m',   # Magenta
-        'RESET': '\033[0m'        # Reset
+        'DEBUG': '\033[36m',      # シアン
+        'INFO': '\033[32m',       # 緑
+        'WARNING': '\033[33m',    # 黄色
+        'ERROR': '\033[31m',      # 赤
+        'CRITICAL': '\033[35m',   # マゼンタ
+        'RESET': '\033[0m'        # リセット
     }
     
     def format(self, record):
-        """Format log record with colors."""
-        # Get the color for this log level
+        """色付きでログレコードをフォーマットする。"""
+        # このログレベルの色を取得
         color = self.COLORS.get(record.levelname, self.COLORS['RESET'])
         reset = self.COLORS['RESET']
         
-        # Apply color to the level name
+        # レベル名に色を適用
         original_levelname = record.levelname
         record.levelname = f"{color}{record.levelname}{reset}"
         
-        # Format the message
+        # メッセージをフォーマット
         formatted_message = super().format(record)
         
-        # Restore original level name
+        # 元のレベル名を復元
         record.levelname = original_levelname
         
         return formatted_message
@@ -54,35 +54,35 @@ from lib.prompts.agents.final_answer import FINAL_ANSWER_PROMPT
 from lib.prompts.agents.manager import MANAGER_PROMPT
 from lib.util import dbg, get_azure_openai_service
 
-# Configure logging with UTF-8 encoding to support emojis and colors
+# UTF-8エンコーディングで絵文字と色をサポートするようにログを設定
 def setup_colored_logging():
-    """Setup colored logging configuration."""
-    # Create colored formatter
+    """色付きログ設定を行う。"""
+    # 色付きフォーマッターを作成
     colored_formatter = ColoredFormatter(
         fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     
-    # Configure root logger
+    # ルートロガーを設定
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
     
-    # Remove existing handlers to avoid duplicates
+    # 既存のハンドラーを削除して重複を回避
     for handler in root_logger.handlers[:]:
         root_logger.removeHandler(handler)
     
-    # Create console handler with colored formatter
+    # 色付きフォーマッターを持つコンソールハンドラーを作成
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(colored_formatter)
     console_handler.setLevel(logging.INFO)
     
-    # Add handler to root logger
+    # ルートロガーにハンドラーを追加
     root_logger.addHandler(console_handler)
 
 # Setup colored logging
 setup_colored_logging()
 
-# Early suppression of verbose loggers before setup_logging
+# setup_loggingの前に冗長なロガーを抑制
 logging.getLogger("config.project_config").setLevel(logging.WARNING)
 logging.getLogger("main_config").setLevel(logging.WARNING)
 logging.getLogger("lib.config").setLevel(logging.WARNING)
@@ -92,21 +92,21 @@ logger = logging.getLogger(__name__)
 
 
 def configure_logging(debug_mode: bool = False) -> None:
-    """Configure logging levels based on debug mode."""
+    """デバッグモードに基づいてログレベルを設定する。"""
     if debug_mode or os.getenv("DEBUG", "").lower() in ("true", "1", "yes"):
-        # Enable detailed debugging
+        # 詳細なデバッグを有効化
         logging.getLogger().setLevel(logging.DEBUG)
         logging.getLogger("kernel").setLevel(logging.DEBUG)
         logging.getLogger("semantic_kernel").setLevel(logging.DEBUG)
         logging.getLogger("lib").setLevel(logging.DEBUG)
-        # Update console handler level for debug mode
+        # デバッグモード用にコンソールハンドラーのレベルを更新
         for handler in logging.getLogger().handlers:
             if isinstance(handler, logging.StreamHandler):
                 handler.setLevel(logging.DEBUG)
         
         logger.info("🐛 DEBUG mode enabled - detailed logging active")
     else:
-        # Normal logging levels - reduce verbosity
+        # 通常のログレベル - 冗長性を削減
         logging.getLogger("kernel").setLevel(logging.WARNING)
         logging.getLogger("in_process_runtime.events").setLevel(logging.WARNING)
         logging.getLogger("in_process_runtime").setLevel(logging.WARNING)
@@ -116,14 +116,14 @@ def configure_logging(debug_mode: bool = False) -> None:
         logging.getLogger("semantic_kernel.functions.kernel_function").setLevel(logging.WARNING)
         logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(logging.WARNING)
         
-        # Aggressively reduce config-related logging
+        # 設定関連のログを積極的に削減
         logging.getLogger("config").setLevel(logging.ERROR)
         logging.getLogger("config.project_config").setLevel(logging.ERROR)
         logging.getLogger("main_config").setLevel(logging.ERROR)
         logging.getLogger("lib.config").setLevel(logging.ERROR)
         logging.getLogger("lib.config.project_config").setLevel(logging.ERROR)
         
-        # Reduce search and memory initialization logs
+        # 検索とメモリ初期化のログを削減
         logging.getLogger("lib.search").setLevel(logging.WARNING)
         logging.getLogger("lib.search.providers").setLevel(logging.WARNING)
         logging.getLogger("lib.search.manager").setLevel(logging.WARNING)
@@ -132,41 +132,41 @@ def configure_logging(debug_mode: bool = False) -> None:
         logging.getLogger("lib.memory.manager").setLevel(logging.WARNING)
         logging.getLogger("lib.memory.manager.MemoryManager").setLevel(logging.WARNING)
         
-        # Reduce agent creation logs but keep important ones
+        # エージェント作成のログを削減し、重要なものだけを保持
         logging.getLogger("lib.orchestration").setLevel(logging.WARNING)
         logging.getLogger("lib.orchestration.lead_researcher_agent").setLevel(logging.WARNING)
         logging.getLogger("lib.orchestration.parallel_research_plugin").setLevel(logging.INFO)
         logging.getLogger("lib.util").setLevel(logging.WARNING)
         
-        # Keep only essential agent_factory logs - summary only
+        # 本質的なagent_factoryログのみ保持 - サマリーのみ
         logging.getLogger("lib.agent_factory").setLevel(logging.WARNING)
 
 
 class DeepResearchAgent:
-    """Main orchestrator for the Deep Research Agent system using Semantic Kernel memory."""
+    """Semantic Kernelメモリを使用したディープリサーチエージェントシステムのメインオーケストレーター。"""
 
     def __init__(
             self,
             session_id: Optional[str] = None,
             project_id: Optional[str] = None):
-        """Initialize the research agent system with memory capabilities."""
+        """メモリ機能を持つリサーチエージェントシステムを初期化する。"""
         self.session_id = session_id or str(uuid.uuid4())
         self.project_id = project_id or f"project_{self.session_id[:8]}"
-        self.is_new_session = session_id is None  # Track if this is a new session
+        self.is_new_session = session_id is None  # 新しいセッションかどうかを追跡
         self.orchestration: Optional[MagenticOrchestration] = None
         self.runtime: Optional[InProcessRuntime] = None
         self.memory_plugin: Optional[MemoryPlugin] = None
         self.shared_memory_plugin: Optional[SharedMemoryPluginSK] = None
 
     async def initialize(self) -> None:
-        """Initialize the agent orchestration system with memory."""
+        """メモリを持つエージェントオーケストレーションシステムを初期化する。"""
         try:
             logger.info(f"🚀 Initializing Deep Research Agent (Session: {self.session_id[:8]}...)")
 
-            # Get config instance
+            # 設定インスタンスを取得
             config = get_config()
 
-            # Create embedding generator for Azure OpenAI
+            # Azure OpenAI用のエンベディングジェネレーターを作成
             embedding_generator = create_azure_openai_text_embedding(
                 api_key=config.azure_openai_api_key,
                 endpoint=config.azure_openai_endpoint,
@@ -175,7 +175,7 @@ class DeepResearchAgent:
                 service_id="azure_embedding"
             )
 
-            # Initialize memory plugin
+            # メモリプラグインを初期化
             memory_manager = MemoryManager(
                 embedding_generator=embedding_generator,
                 session_id=self.session_id,
@@ -184,7 +184,7 @@ class DeepResearchAgent:
             await memory_manager.initialize()
             self.memory_plugin = MemoryPlugin(memory_manager)
             logger.info("💾 Memory system initialized")
-            # Create all agents with memory support
+            # メモリサポート付きの全エージェントを作成
             reasoning_high_settings =  AzureChatPromptExecutionSettings(reasoning_effort="high")
             logger.info("🤖 Creating 7 research agents...")
             agents_dict = await create_agents_with_memory(
@@ -192,10 +192,10 @@ class DeepResearchAgent:
             )
             logger.info("✅ Research agents created successfully")
 
-            # Extract agent list for orchestration
+            # オーケストレーション用のエージェントリストを抽出
             members = list(agents_dict.values())
 
-            # Create orchestration with manager
+            # マネージャー付きでオーケストレーションを作成
             logger.info("🎯 Setting up orchestration manager...")
             self.orchestration = MagenticOrchestration(
                 members=members,
@@ -208,7 +208,7 @@ class DeepResearchAgent:
                 ),
                 agent_response_callback=dbg)
 
-            # Initialize runtime
+            # ランタイムを初期化
             self.runtime = InProcessRuntime()
             self.runtime.start()
 
@@ -220,26 +220,26 @@ class DeepResearchAgent:
 
     async def research(self, query: str) -> str:
         """
-        Execute research task and return final report.
+        リサーチタスクを実行し、最終レポートを返す。
 
-        Args:
-            query: Research query/task        Returns:
-            str: Final research report
+        引数:
+            query: リサーチクエリ/タスク        戻り値:
+            str: 最終リサーチレポート
         """
         if not self.orchestration or not self.runtime:
             raise RuntimeError(
-                "Agent system not initialized. Call initialize() first.")
+                "エージェントシステムが初期化されていません。initialize()を先に呼び出してください。")
 
         try:
-            logger.info(f"🔍 Starting research: {query[:50]}{'...' if len(query) > 50 else ''}")
-            # Execute research orchestration (agents can access memory independently)
-            logger.info("🤖 Starting multi-agent orchestration...")
+            logger.info(f"🔍 リサーチ開始: {query[:50]}{'...' if len(query) > 50 else ''}")
+            # リサーチオーケストレーションを実行（エージェントはメモリに独立してアクセス可能）
+            logger.info("🤖 マルチエージェントオーケストレーションを開始...")
             result_proxy = await self.orchestration.invoke(task=query, runtime=self.runtime)
 
-            # Handle different result types from Semantic Kernel
+            # Semantic Kernelからの異なる結果タイプを処理
             result = await result_proxy.get()
 
-            # Extract content from ChatMessageContent object
+            # ChatMessageContentオブジェクトからコンテンツを抽出
             if hasattr(result, 'content'):
                 final_report = str(result.content)
             elif hasattr(result, 'value'):
@@ -247,78 +247,77 @@ class DeepResearchAgent:
             else:
                 final_report = str(result)
 
-            print("Final report generated by orchestration:")
+            print("オーケストレーションによって生成された最終レポート:")
             print(final_report)
 
-            logger.info("✅ Research task completed successfully")
+            logger.info("✅ リサーチタスクが正常に完了しました")
             return final_report
 
         except Exception as e:
-            logger.error(f"❌ Research task failed: {e}")
+            logger.error(f"❌ リサーチタスクが失敗しました: {e}")
             raise
 
     async def cleanup(self) -> None:
-        """Clean up resources."""
+        """リソースをクリーンアップする。"""
         try:
-            # Memory Plugin automatically persists data, no manual save
-            # needed
+            # メモリプラグインはデータを自動的に永続化し、手動での保存は不要
             if self.memory_plugin:
-                logger.info("Memory cleanup completed (auto-persist)")
+                logger.info("メモリクリーンアップが完了しました（自動永続化）")
 
             if self.runtime:
                 await self.runtime.stop_when_idle()
-                logger.info("Runtime stopped successfully")
+                logger.info("ランタイムが正常に停止しました")
         except Exception as e:
-            logger.warning(f"Error during cleanup: {e}")
+            logger.warning(f"クリーンアップ中にエラーが発生しました: {e}")
 
 
 async def main() -> None:
-    """Main entry point."""
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(description="Deep Research Agent")
+    """メインエントリーポイント。"""
+    # コマンドライン引数を解析
+    parser = argparse.ArgumentParser(description="ディープリサーチエージェント")
     parser.add_argument(
         "--debug",
         action="store_true",
-        help="Enable debug logging")
-    parser.add_argument("--query", type=str, help="Research query to execute")
+        help="デバッグログを有効化")
+    parser.add_argument("--query", type=str, help="実行するリサーチクエリ")
     args = parser.parse_args()
 
-    # Configure logging based on arguments
+    # 引数に基づいてログを設定
     configure_logging(debug_mode=args.debug)
 
     try:
-        # Validate configuration
+        # 設定を検証
         config = get_config()
-        logger.info("⚙️  Configuration validated")
+        logger.info("⚙️  設定が検証されました")
 
-        # Initialize research agent
+        # リサーチエージェントを初期化
         agent = DeepResearchAgent()
         await agent.initialize()
 
-        # Define research task for internal R&D document analysis
-        user_task = args.query or "What is Azure OpenAI?"
+        # 内部R&D文書分析用のリサーチタスクを定義
+        user_task = args.query or "Azure OpenAIとは何ですか？"
 
-        # Execute research
+        # リサーチを実行
         logger.info("=" * 60)
-        logger.info("🔬 DEEP RESEARCH AGENT")
+        logger.info("🔬 ディープリサーチエージェント")
         logger.info("=" * 60)
 
         final_report = await agent.research(user_task)
         
-        # Display results
+        # 結果を表示
         print("\n" + "=" * 60)
-        print("📋 FINAL RESEARCH REPORT")
+        print("📋 最終リサーチレポート")
         print("=" * 60)
         print(final_report)
         print("=" * 60)
 
-        logger.info("🎉 Research process completed successfully")
+        logger.info("🎉 リサーチプロセスが正常に完了しました")
 
     except KeyboardInterrupt:
-        logger.info("Process interrupted by user")
+        logger.info("ユーザーによってプロセスが中断されました")
         sys.exit(0)
     except Exception as e:
-        logger.error(f"Fatal error: {e}")
+        logger.error(f"致命的なエラー: {e}")
         sys.exit(1)
     finally:
         if 'agent' in locals():
@@ -327,7 +326,7 @@ async def main() -> None:
 
 if __name__ == "__main__":
     try:
-        # Configure colored logging FIRST before importing anything else that might log
+        # 他のものがログを出力する前に最初に色付きログを設定
         setup_colored_logging()
         configure_logging(
             debug_mode=os.getenv(
@@ -339,7 +338,7 @@ if __name__ == "__main__":
 
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n🛑 Deep Research Agent stopped by user")
+        print("\n🛑 ディープリサーチエージェントがユーザーによって停止されました")
     except Exception as e:
-        print(f"❌ Fatal error: {e}")
+        print(f"❌ 致命的なエラー: {e}")
         sys.exit(1)

@@ -1,0 +1,39 @@
+{
+  "model": "kimi-k2-0711-preview",
+  "permissions": {
+    "allow": [
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__onboarding",
+      "mcp__serena__list_dir",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__find_symbol",
+      "mcp__serena__find_file",
+      "Bash(find:*)",
+      "mcp__serena__write_memory",
+      "mcp__serena__think_about_whether_you_are_done",
+      "mcp__serena__replace_regex",
+      "mcp__serena__replace_symbol_body",
+      "Bash(npm create:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(mkdir:*)",
+      "Bash(git add:*)",
+      "Bash(rm:*)",
+      "Bash(npm test:*)",
+      "Bash(uv run:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(sed:*)",
+      "Bash(timeout:*)",
+      "Bash(git commit:*)",
+      "Bash(npm run test)",
+      "Bash(npm run test:*)",
+      "Bash(curl:*)",
+      "Bash(python:*)",
+      "Bash(pkill:*)",
+      "Bash(true)"
+    ],
+    "deny": []
+  }
+}
