@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Cpu, Activity, Clock } from 'lucide-react';
 import { useAgents } from '../../hooks/useAgents';
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation(['dashboard', 'common']);
   const { agents, stats, isLoading } = useAgents();
 
   if (isLoading) {
@@ -22,7 +24,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('common:navigation.dashboard')}</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
@@ -31,7 +33,7 @@ const Dashboard: React.FC = () => {
               <Cpu className="w-8 h-8 text-blue-600 dark:text-blue-300" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Agents</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('stats.totalAgents')}</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total_agents || 0}</p>
             </div>
           </div>
@@ -43,7 +45,7 @@ const Dashboard: React.FC = () => {
               <Activity className="w-8 h-8 text-green-600 dark:text-green-300" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Active Agents</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('stats.activeAgents')}</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.active_agents || 0}</p>
             </div>
           </div>
@@ -55,7 +57,7 @@ const Dashboard: React.FC = () => {
               <Clock className="w-8 h-8 text-purple-600 dark:text-purple-300" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Tasks</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('stats.completedTasks')}</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.completed_tasks || 0}</p>
             </div>
           </div>
@@ -64,7 +66,7 @@ const Dashboard: React.FC = () => {
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Activity</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('common:recentActivity')}</h2>
         </div>
         <div className="p-6">
           <div className="space-y-4">
@@ -79,7 +81,7 @@ const Dashboard: React.FC = () => {
                   agent.status === 'completed' ? 'bg-blue-100 text-blue-800' :
                   'bg-gray-100 text-gray-800'
                 }`}>
-                  {agent.status}
+                  {t(`status.${agent.status}`)}
                 </div>
               </div>
             ))}

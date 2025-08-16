@@ -1,0 +1,48 @@
+{
+  "agentDashboard": {
+    "title": "エージェントダッシュボード",
+    "subtitle": "AIリサーチエージェントの監視と管理",
+    "systemOnline": "システム稼働中"
+  },
+  "stats": {
+    "totalAgents": "総エージェント数",
+    "activeAgents": "稼働中エージェント",
+    "completedTasks": "完了タスク数",
+    "failedTasks": "失敗タスク数",
+    "memoryUsage": "メモリ使用量",
+    "avgResponseTime": "平均応答時間",
+    "systemPerformance": "システムパフォーマンス",
+    "agentStatus": "エージェントステータス",
+    "running": "実行中",
+    "completed": "完了",
+    "error": "エラー",
+    "idle": "待機中"
+  },
+  "agentsList": {
+    "title": "エージェント一覧",
+    "subtitle": "AIリサーチエージェントを管理・監視",
+    "lastActivity": "最終活動",
+    "noActivity": "活動なし",
+    "plugins": "プラグイン"
+  },
+  "status": {
+    "running": "実行中",
+    "completed": "完了",
+    "error": "エラー",
+    "idle": "待機中"
+  },
+  "plugins": {
+    "web_search": "ウェブ検索",
+    "pdf_reader": "PDFリーダー",
+    "citation_manager": "引用管理",
+    "data_analyzer": "データ分析",
+    "chart_generator": "グラフ生成",
+    "statistics": "統計",
+    "legal_database": "法律データベース",
+    "case_analyzer": "ケース分析",
+    "precedent_finder": "判例検索",
+    "pubmed_search": "PubMed検索",
+    "clinical_trials": "臨床試験",
+    "medical_analyzer": "医療分析"
+  }
+}
