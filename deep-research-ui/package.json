@@ -11,7 +11,13 @@
     "test": "vitest",
     "test:ci": "vitest run --coverage",
     "test:watch": "vitest --watch",
-    "type-check": "tsc --noEmit"
+    "test:i18n": "vitest run src/i18n/__tests__ src/components/__tests__/i18n-components.test.tsx",
+    "test:e2e": "node playwright-test.js",
+    "test:e2e-i18n": "node playwright-test-i18n.js",
+    "type-check": "tsc --noEmit",
+    "i18n:detect-unused": "tsx src/i18n/unused-keys-detector.ts",
+    "i18n:validate": "npm run test:i18n",
+    "i18n:report": "npm run i18n:detect-unused > translation-usage-report.md"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

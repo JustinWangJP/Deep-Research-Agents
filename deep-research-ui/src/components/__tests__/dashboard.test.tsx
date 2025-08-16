@@ -4,6 +4,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '../../i18n/config';
 import Dashboard from '../dashboard/Dashboard';
 
 // モックデータ
@@ -30,9 +32,16 @@ describe('Dashboard', () => {
     defaultOptions: { queries: { retry: false } }
   });
 
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  const wrapper = ({ children }: { children: React.ReactNode }) => {
+    i18n.changeLanguage('en');
+    return (
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          {children}
+        </I18nextProvider>
+      </QueryClientProvider>
+    );
+  };
 
   it('should display agent statistics when loaded', async () => {
     render(

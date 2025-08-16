@@ -15,7 +15,7 @@ const LanguageSwitcher: React.FC = () => {
     i18n.changeLanguage(lng);
   };
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  // const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   return (
     <DropdownMenu.Root>

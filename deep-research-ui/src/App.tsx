@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import Header from './components/shared/Header';
 import AgentDashboard from './components/dashboard/AgentDashboard';
 
@@ -13,6 +14,7 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  const { t } = useTranslation(['common']);
   const [darkMode, setDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState('agents');
 
@@ -37,10 +39,10 @@ function App() {
   };
 
   const tabs = [
-    { id: 'agents', name: 'Agents', icon: '🤖', description: 'Manage AI agents' },
-    { id: 'search', name: 'Search', icon: '🔍', description: 'Search research data' },
-    { id: 'memory', name: 'Memory', icon: '🧠', description: 'Explore agent memory' },
-    { id: 'citations', name: 'Citations', icon: '📚', description: 'Manage citations' },
+    { id: 'agents', name: t('navigation.agents'), icon: '🤖', description: t('navigation.agentsDescription') },
+    { id: 'search', name: t('navigation.search'), icon: '🔍', description: t('navigation.searchDescription') },
+    { id: 'memory', name: t('navigation.memory'), icon: '🧠', description: t('navigation.memoryDescription') },
+    { id: 'citations', name: t('navigation.citations'), icon: '📚', description: t('navigation.citationsDescription') },
   ];
 
   return (
@@ -82,14 +84,14 @@ function App() {
                     <span className="text-2xl">🔍</span>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    Search Interface Coming Soon
+                    {t('common.comingSoon')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    The search interface is under development. Check back soon for advanced research capabilities!
+                    {t('common.searchInterfaceDescription')}
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      🚀 Features in development: Semantic search, filters, and result visualization
+                      {t('common.searchFeatures')}
                     </p>
                   </div>
                 </div>
@@ -102,14 +104,14 @@ function App() {
                     <span className="text-2xl">🧠</span>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    Memory Explorer Coming Soon
+                    {t('common.comingSoon')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    The memory explorer is under development. Check back soon for agent memory insights!
+                    {t('common.memoryInterfaceDescription')}
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      🧠 Features in development: Memory visualization, search, and analysis tools
+                      {t('common.memoryFeatures')}
                     </p>
                   </div>
                 </div>
@@ -122,14 +124,14 @@ function App() {
                     <span className="text-2xl">📚</span>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    Citation Manager Coming Soon
+                    {t('common.comingSoon')}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    The citation manager is under development. Check back soon for citation management!
+                    {t('common.citationsInterfaceDescription')}
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      📚 Features in development: Citation tracking, export, and bibliography generation
+                      {t('common.citationsFeatures')}
                     </p>
                   </div>
                 </div>

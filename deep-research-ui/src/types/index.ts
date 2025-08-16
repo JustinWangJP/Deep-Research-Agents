@@ -31,6 +31,7 @@ export interface AgentStats {
   completed_tasks: number;
   failed_tasks: number;
   average_response_time: number;
+  total_memory_usage?: string;
   uptime_percent: number;
 }
 

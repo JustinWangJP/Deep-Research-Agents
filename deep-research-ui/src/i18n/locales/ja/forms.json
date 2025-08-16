@@ -1,0 +1,26 @@
+{
+  "validation": {
+    "required": "この項目は必須です",
+    "email": "有効なメールアドレスを入力してください",
+    "minLength": "最小文字数は{min}文字です",
+    "maxLength": "最大文字数は{max}文字です",
+    "pattern": "有効な形式で入力してください",
+    "number": "有効な数値を入力してください",
+    "url": "有効なURLを入力してください"
+  },
+  "messages": {
+    "success": "操作が正常に完了しました",
+    "error": "エラーが発生しました",
+    "saving": "保存中...",
+    "saved": "正常に保存されました",
+    "loading": "読み込み中...",
+    "noChanges": "保存する変更がありません"
+  },
+  "actions": {
+    "submit": "送信",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "reset": "リセット",
+    "clear": "クリア"
+  }
+}

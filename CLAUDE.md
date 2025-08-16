@@ -33,8 +33,10 @@ uv run mypy .
 - `uv run python main.py --query "question"` - Run research agent
 - `uv run python main.py --debug` - Enable debug logging
 - `uv run pytest` - Run all tests
+- `uv run pytest tests/test_specific.py::test_function` - Run single test
 - `uv run black . && uv run isort .` - Format code
 - `uv run mypy lib/` - Type checking
+- `cd deep-research-ui && npm run dev` - Start React dev server
 
 ## 🏗️ Architecture Overview
 
@@ -78,16 +80,21 @@ deep-research-ui/
 │   │   ├── dashboard/
 │   │   ├── search/
 │   │   ├── memory/
-│   │   └── citations/
+│   │   ├── citations/
+│   │   └── shared/                 # Header, LanguageSwitcher
 │   ├── services/
 │   │   ├── api.ts                  # HTTP API client
 │   │   └── websocket.ts            # WebSocket client
 │   ├── hooks/
 │   │   └── useAgents.ts            # React Query hooks
+│   ├── i18n/                       # Complete i18n system
+│   │   ├── locales/                # Translation files (en/ja)
+│   │   └── config.ts               # i18next configuration
 │   ├── types/
 │   │   └── index.ts                # TypeScript interfaces
 │   └── utils/
-└── package.json                    # Frontend dependencies
+├── package.json                    # Frontend dependencies
+└── playwright-test-i18n.js         # i18n testing utilities
 ```
 
 ## 🔧 Configuration
@@ -138,11 +145,20 @@ uv run pytest
 # Run specific test file
 uv run pytest tests/test_search.py
 
+# Run specific test function
+uv run pytest tests/test_search.py::test_function_name
+
 # Run with coverage
 uv run pytest --cov=lib
 
 # Frontend tests
 cd deep-research-ui && npm test
+
+# Frontend tests in watch mode
+cd deep-research-ui && npm test -- --watch
+
+# i18n testing
+node deep-research-ui/playwright-test-i18n.js
 ```
 
 ## 🔍 Debugging

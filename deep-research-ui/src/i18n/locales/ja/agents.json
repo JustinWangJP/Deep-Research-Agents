@@ -1,36 +1,34 @@
 {
-  "agentDashboard": {
-    "title": "エージェントダッシュボード",
-    "subtitle": "AIリサーチエージェントの監視と管理",
-    "systemOnline": "システム稼働中"
-  },
-  "recentActivity": "最近の活動",
-  "stats": {
-    "totalAgents": "総エージェント数",
-    "activeAgents": "稼働中エージェント",
-    "completedTasks": "完了タスク数",
-    "failedTasks": "失敗タスク数",
-    "memoryUsage": "メモリ使用量",
-    "avgResponseTime": "平均応答時間",
-    "systemPerformance": "システムパフォーマンス",
-    "agentStatus": "エージェントステータス",
-    "running": "実行中",
-    "completed": "完了",
-    "error": "エラー",
-    "idle": "待機中"
-  },
-  "agentsList": {
+  "title": "エージェント管理",
+  "subtitle": "AIリサーチエージェントの管理と監視",
+  "list": {
     "title": "エージェント一覧",
     "subtitle": "AIリサーチエージェントを管理・監視",
+    "empty": "利用可能なエージェントがありません",
     "lastActivity": "最終活動",
     "noActivity": "活動なし",
     "plugins": "プラグイン"
   },
+  "details": {
+    "information": "情報",
+    "configuration": "設定",
+    "performance": "パフォーマンス",
+    "logs": "ログ"
+  },
+  "actions": {
+    "start": "開始",
+    "stop": "停止",
+    "restart": "再起動",
+    "configure": "設定",
+    "viewLogs": "ログを表示",
+    "delete": "削除"
+  },
   "status": {
+    "idle": "待機中",
     "running": "実行中",
     "completed": "完了",
     "error": "エラー",
-    "idle": "待機中"
+    "paused": "一時停止"
   },
   "plugins": {
     "web_search": "ウェブ検索",

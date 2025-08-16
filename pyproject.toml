@@ -38,6 +38,7 @@ dependencies = [
     "litellm[proxy]>=1.75.7",
     "python-socketio>=5.10.0",
     "websockets>=12.0",
+    "psutil>=5.9.0",
 ]
 
 [project.optional-dependencies]

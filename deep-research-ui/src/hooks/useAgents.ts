@@ -28,6 +28,7 @@ export const useAgents = () => {
     queryFn: agentAPI.getStats,
     refetchInterval: 5000,
     staleTime: 5000,
+
   });
 
   // Update agent status
@@ -70,7 +71,15 @@ export const useAgents = () => {
 
   return {
     agents: agentsData?.agents || [],
-    stats: stats || {} as AgentStats,
+    stats: stats || {
+      total_agents: 0,
+      active_agents: 0,
+      completed_tasks: 0,
+      failed_tasks: 0,
+      average_response_time: 0,
+      total_memory_usage: undefined,
+      uptime_percent: 100.0,
+    } as AgentStats,
     pagination: {
       page,
       pageSize,

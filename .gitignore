@@ -12,3 +12,4 @@ config/project_config.yaml
 .serena/cache/*
 
 claude-code-cookbook/
+.kiro/
