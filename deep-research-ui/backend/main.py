@@ -67,7 +67,6 @@ app = FastAPI(
     - **Advanced Search**: Search across multiple document types and providers
     - **Memory System**: Persistent semantic memory for research context
     - **Citation Management**: Create, manage, and validate citations
-    - **Real-time Updates**: WebSocket support for live updates
     
     ## Authentication
     Currently, this API is open for development.
@@ -233,6 +232,36 @@ async def list_agents(
     )
 
 
+@app.get("/api/v1/agents/stats", response_model=AgentStats, tags=["agents"])
+async def get_agent_stats():
+    """
+    エージェントの包括的な統計情報を取得
+
+    レスポンス内容:
+    - total_agents: 総エージェント数
+    - active_agents: 現在アクティブなエージェント数
+    - completed_tasks: 完了したタスク数
+    - failed_tasks: 失敗したタスク数
+    - average_response_time: 平均応答時間（秒）
+    - uptime_percent: システム稼働率（%）
+    """
+    try:
+        if not agents:
+            return AgentStats()
+
+        stats = AgentStats(
+            total_agents=len(agents),
+            active_agents=0,  # 将来的に動的に計算
+            completed_tasks=0,  # 将来的に動的に計算
+            failed_tasks=0,  # 将来的に動的に計算
+            average_response_time=0.0,
+            uptime_percent=100.0,
+        )
+        return stats
+    except Exception as e:
+        raise
+
+
 @app.get("/api/v1/agents/{agent_id}", response_model=AgentInfo, tags=["agents"])
 async def get_agent(agent_id: str = Path(..., description="Agent identifier")):
     """Get detailed information about a specific agent"""
@@ -247,32 +276,6 @@ async def get_agent(agent_id: str = Path(..., description="Agent identifier")):
         status="idle",
         plugins=getattr(agent, "plugins", []),
         config=getattr(agent, "config", {}),
-    )
-
-
-@app.get("/api/v1/agents/stats", response_model=AgentStats, tags=["agents"])
-async def get_agent_stats():
-    """
-    エージェントの包括的な統計情報を取得
-
-    レスポンス内容:
-    - total_agents: 総エージェント数
-    - active_agents: 現在アクティブなエージェント数
-    - completed_tasks: 完了したタスク数
-    - failed_tasks: 失敗したタスク数
-    - average_response_time: 平均応答時間（秒）
-    - uptime_percent: システム稼働率（%）
-    """
-    if not agents:
-        return AgentStats()
-
-    return AgentStats(
-        total_agents=len(agents),
-        active_agents=0,  # 将来的に動的に計算
-        completed_tasks=0,  # 将来的に動的に計算
-        failed_tasks=0,  # 将来的に動的に計算
-        average_response_time=0.0,
-        uptime_percent=100.0,
     )
 
 
@@ -844,4 +847,4 @@ async def internal_server_error_handler(request, exc):
 
 
 if __name__ == "__main__":
-    uvicorn.run("deep-research-ui.backend.main:app", host="0.0.0.0", port=8000, reload=True, log_level="debug")
+    uvicorn.run("deep-research-ui.backend.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")

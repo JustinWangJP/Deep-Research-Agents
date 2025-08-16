@@ -10,3 +10,5 @@ config/project_config.yaml
 .env
 .DS_Store
 .serena/cache/*
+
+claude-code-cookbook/

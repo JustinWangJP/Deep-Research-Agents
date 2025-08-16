@@ -1,4 +1,5 @@
 {
+  "model": "kimi-k2-0711-preview",
   "permissions": {
     "allow": [
       "mcp__serena__check_onboarding_performed",
@@ -27,9 +28,12 @@
       "Bash(timeout:*)",
       "Bash(git commit:*)",
       "Bash(npm run test)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(curl:*)",
+      "Bash(python:*)",
+      "Bash(pkill:*)",
+      "Bash(true)"
     ],
-    "deny": [],
-    "defaultMode": "acceptEdits"
+    "deny": []
   }
 }

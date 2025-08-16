@@ -1,0 +1,48 @@
+{
+  "agentDashboard": {
+    "title": "Agent Dashboard",
+    "subtitle": "Monitor and manage your AI research agents",
+    "systemOnline": "System Online"
+  },
+  "stats": {
+    "totalAgents": "Total Agents",
+    "activeAgents": "Active Agents",
+    "completedTasks": "Completed Tasks",
+    "failedTasks": "Failed Tasks",
+    "memoryUsage": "Memory Usage",
+    "avgResponseTime": "Avg Response Time",
+    "systemPerformance": "System Performance",
+    "agentStatus": "Agent Status",
+    "running": "Running",
+    "completed": "Completed",
+    "error": "Error",
+    "idle": "Idle"
+  },
+  "agentsList": {
+    "title": "Agents Overview",
+    "subtitle": "Manage and monitor your AI research agents",
+    "lastActivity": "Last Activity",
+    "noActivity": "No activity",
+    "plugins": "Plugins"
+  },
+  "status": {
+    "running": "Running",
+    "completed": "Completed",
+    "error": "Error",
+    "idle": "Idle"
+  },
+  "plugins": {
+    "web_search": "Web Search",
+    "pdf_reader": "PDF Reader",
+    "citation_manager": "Citation Manager",
+    "data_analyzer": "Data Analyzer",
+    "chart_generator": "Chart Generator",
+    "statistics": "Statistics",
+    "legal_database": "Legal Database",
+    "case_analyzer": "Case Analyzer",
+    "precedent_finder": "Precedent Finder",
+    "pubmed_search": "PubMed Search",
+    "clinical_trials": "Clinical Trials",
+    "medical_analyzer": "Medical Analyzer"
+  }
+}
