@@ -20,6 +20,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Query, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from functools import wraps
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -114,6 +115,41 @@ citation_manager: Optional[CitationManager] = None
 agents: Optional[Dict[str, Any]] = None
 memory_plugin: Optional[MemoryPlugin] = None
 
+# Response time tracking
+response_time_history: List[float] = []
+MAX_HISTORY_SIZE = 100
+
+
+def track_response_time(func):
+    """Decorator to track actual response times for API endpoints"""
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        start_time = datetime.now(timezone.utc)
+        try:
+            result = await func(*args, **kwargs)
+            response_time = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+            response_time_history.append(response_time)
+            if len(response_time_history) > MAX_HISTORY_SIZE:
+                response_time_history.pop(0)
+            return result
+        except Exception as e:
+            response_time = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+            response_time_history.append(response_time)
+            if len(response_time_history) > MAX_HISTORY_SIZE:
+                response_time_history.pop(0)
+            raise e
+    return wrapper
+
+
+def get_average_response_time() -> float:
+    """Calculate actual average response time from recent history"""
+    if not response_time_history:
+        # Fallback baseline when no history exists
+        return 250.0
+    
+    recent_responses = response_time_history[-20:]  # Last 20 responses
+    return round(sum(recent_responses) / len(recent_responses),2)
+
 
 # Startup event
 @app.on_event("startup")
@@ -180,6 +216,7 @@ async def health_check():
 
 # Agent endpoints
 @app.get("/api/v1/agents", response_model=AgentListResponse, tags=["agents"])
+@track_response_time
 async def list_agents(
     page: int = Query(1, ge=1, description="ページ番号（1から開始）"),
     page_size: int = Query(
@@ -233,6 +270,7 @@ async def list_agents(
 
 
 @app.get("/api/v1/agents/stats", response_model=AgentStats, tags=["agents"])
+@track_response_time
 async def get_agent_stats():
     """
     エージェントの包括的な統計情報を取得
@@ -258,15 +296,14 @@ async def get_agent_stats():
         # 実際のエージェント統計を計算
         active_agents = sum(1 for agent in agents.values() if hasattr(agent, 'status') and getattr(agent, 'status', 'idle') == 'running')
         
-        # 平均応答時間を模擬（実際の実装では履歴から計算）
-        import random
-        average_response_time = random.uniform(100, 500)  # 100-500msの範囲
+        # 実際の平均応答時間を計算
+        average_response_time = get_average_response_time()
 
         stats = AgentStats(
             total_agents=len(agents),
             active_agents=active_agents,
-            completed_tasks=0,  # 将来的に動的に計算
-            failed_tasks=0,  # 将来的に動的に計算
+            completed_tasks=len(response_time_history),  # 実際のAPIコール数から推定
+            failed_tasks=0,  # エラーログ実装後に動的に計算
             average_response_time=average_response_time,
             total_memory_usage=memory_usage_str,
             uptime_percent=100.0,
@@ -277,9 +314,9 @@ async def get_agent_stats():
         return AgentStats(
             total_agents=len(agents) if agents else 0,
             active_agents=0,
-            completed_tasks=0,
+            completed_tasks=len(response_time_history),  # 実際のAPIコール数から推定
             failed_tasks=0,
-            average_response_time=0.0,
+            average_response_time=get_average_response_time(),
             total_memory_usage="N/A",
             uptime_percent=100.0,
         )
@@ -304,6 +341,7 @@ async def get_agent(agent_id: str = Path(..., description="Agent identifier")):
 
 # Search endpoints
 @app.post("/api/v1/search", response_model=SearchResponse, tags=["search"])
+@track_response_time
 async def search_documents(search_request: SearchQuery):
     """
     設定されたすべてのプロバイダーでドキュメントを検索
@@ -381,6 +419,7 @@ async def search_documents(search_request: SearchQuery):
 @app.get(
     "/api/v1/search/providers", response_model=List[SearchProviderInfo], tags=["search"]
 )
+@track_response_time
 async def get_search_providers():
     """Get all available search providers"""
     if not search_manager:
@@ -401,6 +440,7 @@ async def get_search_providers():
 @app.get(
     "/api/v1/search/document-types", response_model=List[DocumentType], tags=["search"]
 )
+@track_response_time
 async def get_document_types():
     """Get all available document types"""
     if not search_manager:

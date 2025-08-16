@@ -538,6 +538,212 @@ uv run python main.py --log-level debug
 - **プルリクエスト**: 開発ブランチから作成
 - **ドキュメント**: 本README.mdの更新も歓迎
 
+## 🌐 国際化 (i18n) 実装ガイド
+
+### i18nシステム概要
+
+このプロジェクトは **React i18next** を使用した完全な多言語対応システムを実装しています。日本語と英語をサポートし、将来的な言語追加も容易に拡張可能です。
+
+### ディレクトリ構造
+
+```
+src/i18n/
+├── config.ts              # i18next設定ファイル
+├── cache.ts              # 翻訳キャッシュ管理
+├── fallback.ts           # フォールバック処理
+├── formatters.ts         # カスタムフォーマッター
+├── types.ts              # TypeScript型定義
+├── unused-keys-detector.ts # 未使用キー検出ツール
+├── locales/
+│   ├── en/               # 英語翻訳ファイル
+│   │   ├── common.json   # 共通UIテキスト
+│   │   ├── dashboard.json # ダッシュボード専用
+│   │   ├── agents.json   # エージェント管理
+│   │   ├── search.json   # 検索機能
+│   │   ├── memory.json   # メモリ管理
+│   │   ├── citations.json # 引用管理
+│   │   ├── forms.json    # フォーム要素
+│   │   └── errors.json   # エラーメッセージ
+│   └── ja/               # 日本語翻訳ファイル（同様の構造）
+└── __tests__/            # テストファイル
+```
+
+### 使用方法
+
+#### 1. 新しい翻訳キーの追加
+
+**共通UIテキストの場合**:
+```typescript
+// src/i18n/locales/ja/common.json
+{
+  "navigation": {
+    "newFeature": "新機能",
+    "newFeatureDescription": "最新の機能をご利用ください"
+  }
+}
+
+// src/i18n/locales/en/common.json
+{
+  "navigation": {
+    "newFeature": "New Feature",
+    "newFeatureDescription": "Try our latest features"
+  }
+}
+```
+
+**機能固有のテキストの場合**:
+```typescript
+// src/i18n/locales/ja/agents.json
+{
+  "createAgent": {
+    "title": "エージェント作成",
+    "description": "新しいAIエージェントを設定します",
+    "form": {
+      "name": "エージェント名",
+      "type": "タイプ",
+      "submit": "作成"
+    }
+  }
+}
+```
+
+#### 2. コンポーネントでの使用
+
+**基本的な使用方法**:
+```typescript
+import { useTranslation } from 'react-i18next';
+
+const MyComponent = () => {
+  const { t } = useTranslation(['common', 'agents']);
+  
+  return (
+    <div>
+      <h1>{t('navigation.newFeature')}</h1>
+      <p>{t('agents:createAgent.description')}</p>
+      <button>{t('common:actions.submit')}</button>
+    </div>
+  );
+};
+```
+
+**動的な翻訳**:
+```typescript
+const { t } = useTranslation();
+
+// 変数を含む翻訳
+const message = t('agents:errors.notFound', { agentName: 'TestAgent' });
+
+// 複数形対応
+const countText = t('agents:list.count', { count: 5 });
+```
+
+#### 3. 日付・数値のフォーマット
+
+```typescript
+import { useTranslation } from 'react-i18next';
+
+const FormattedData = ({ date, number }) => {
+  const { t, i18n } = useTranslation();
+  
+  return (
+    <div>
+      <p>{t('common:date.created', { date: new Date(date) })}</p>
+      <p>{t('common:number.results', { count: number })}</p>
+    </div>
+  );
+};
+```
+
+### 開発者向けガイド
+
+#### 新しい言語の追加
+
+1. **言語ディレクトリの作成**:
+```bash
+mkdir src/i18n/locales/{new-language-code}
+```
+
+2. **翻訳ファイルのコピー**:
+```bash
+# 英語をベースにコピー
+cp src/i18n/locales/en/*.json src/i18n/locales/{new-language-code}/
+```
+
+3. **設定ファイルの更新**:
+```typescript
+// src/i18n/config.ts
+const supportedLanguages = ['en', 'ja', '{new-language-code}'] as const;
+```
+
+#### 翻訳キーの命名規則
+
+**階層的な構造**:
+```
+{機能}.{コンポーネント}.{要素}.{状態}
+例: agents.dashboard.card.status.running
+```
+
+**共通パターン**:
+- `common:*` - 複数の場所で使用される汎用テキスト
+- `{feature}:*` - 特定の機能に限定されるテキスト
+- `errors:*` - エラーメッセージ
+- `forms:*` - フォーム要素（ラベル、プレースホルダーなど）
+
+#### 翻訳のテスト
+
+```bash
+# 未使用キーの検出
+node src/i18n/unused-keys-detector.js
+
+# 翻訳の整合性チェック
+npm run test:i18n
+
+# カバレッジレポート
+npm run test:i18n:coverage
+```
+
+#### デバッグとトラブルシューティング
+
+**翻訳が表示されない場合**:
+1. キー名が正しいか確認
+2. 対応する翻訳ファイルにキーが存在するか確認
+3. 言語ファイルが正しくインポートされているか確認
+4. ブラウザのコンソールでエラーメッセージを確認
+
+**動的に言語を変更**:
+```typescript
+import { useTranslation } from 'react-i18next';
+
+const LanguageSwitcher = () => {
+  const { i18n } = useTranslation();
+  
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
+  
+  return (
+    <select onChange={(e) => changeLanguage(e.target.value)}>
+      <option value="en">English</option>
+      <option value="ja">日本語</option>
+    </select>
+  );
+};
+```
+
+### ベストプラクティス
+
+1. **キーの再利用**: 同じ意味を持つテキストは同じキーを使用
+2. **文脈を含める**: 曖昧な翻訳を避けるため、文脈情報をキー名に含める
+3. **プレースホルダー**: 変数を含む翻訳は、プレースホルダーを明確に定義
+4. **一貫性**: 同じ機能内では、用語の使い方を統一
+
+### 翻訳の管理ワークフロー
+
+1. **開発時**: 英語ベースで開発
+2. **翻訳時**: 専用のブランチで日本語翻訳を追加
+3. **レビュー時**: ネイティブスピーカーによるレビュー
+4. **リリース時**: 両言語での完全なテスト
+
 ---
 
-*このREADMEは継続的に更新されます。最新の情報についてはソースコードを確認してください。*
+*このi18nガイドは継続的に更新されます。最新の情報についてはソースコードを確認してください。*
