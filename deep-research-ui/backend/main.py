@@ -25,8 +25,15 @@ from fastapi.responses import JSONResponse
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+from lib.agent_factory import create_agents_with_memory
+from lib.citation.manager import CitationManager
+from lib.config import get_config
+from lib.memory.manager import MemoryManager
+from lib.memory.plugin import MemoryPlugin
+from lib.search.manager import SearchManager
+
 # Import models
-from models import (
+from .models import (
     AgentInfo,
     AgentListResponse,
     AgentStats,
@@ -49,13 +56,6 @@ from models import (
     SearchQuery,
     SearchResponse,
 )
-
-from lib.agent_factory import create_agents_with_memory
-from lib.citation.manager import CitationManager
-from lib.config import get_config
-from lib.memory.manager import MemoryManager
-from lib.memory.plugin import MemoryPlugin
-from lib.search.manager import SearchManager
 
 # Create FastAPI app with enhanced OpenAPI docs
 app = FastAPI(

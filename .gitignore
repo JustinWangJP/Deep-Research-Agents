@@ -13,3 +13,4 @@ config/project_config.yaml
 
 claude-code-cookbook/
 .kiro/
+deep_research_agent.log

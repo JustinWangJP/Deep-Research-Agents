@@ -5,6 +5,7 @@ Dynamically generates search functions based on project configuration.
 
 import json
 import logging
+from typing import Any
 
 from semantic_kernel.functions import kernel_function
 
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 class ModularSearchPlugin:
     """Semantic Kernel plugin for the modular search system with dynamic function generation."""
 
-    def __init__(self, config: any | None = None):
+    def __init__(self, config: Any = None):
         """Initialize the modular search plugin with dynamic functions."""
         if config is None:
             from ..config import get_config
