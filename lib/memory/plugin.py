@@ -2,8 +2,8 @@
 Semantic Kernel plugin for memory operations.
 Provides kernel function decorators for agent integration.
 """
+
 import logging
-from typing import Any, Dict, List, Optional
 
 from semantic_kernel.functions import kernel_function
 
@@ -29,14 +29,8 @@ class MemoryPlugin:
         self.memory_manager = memory_manager
         self.logger = logging.getLogger(f"{__name__}.MemoryPlugin")
 
-    @kernel_function(name="remember_info",
-                     description="Store important information")
-    async def remember_info(
-        self,
-        content: str,
-        agent_name: str,
-        info_type: str = "general"
-    ) -> str:
+    @kernel_function(name="remember_info", description="Store important information")
+    async def remember_info(self, content: str, agent_name: str, info_type: str = "general") -> str:
         """
         Store information from agents.
 
@@ -48,30 +42,21 @@ class MemoryPlugin:
         Returns:
             str: Storage result message
         """
-        self.logger.debug(
-            f"[MEMORY KERNEL] remember_info called by {agent_name}")
+        self.logger.debug(f"[MEMORY KERNEL] remember_info called by {agent_name}")
         self.logger.debug(f"[MEMORY KERNEL] Info type: {info_type}")
-        self.logger.debug(f"[MEMORY KERNEL] Content: {
-                          content[:100]}... (length: {len(content)} chars)")
-
-        memory_id = await self.memory_manager.store_memory(
-            content=content,
-            entry_type=info_type,
-            source=agent_name
+        self.logger.debug(
+            f"""[MEMORY KERNEL] Content: {
+                          content[:100]}... (length: {len(content)} chars)"""
         )
+
+        memory_id = await self.memory_manager.store_memory(content=content, entry_type=info_type, source=agent_name)
 
         result = f"Stored: {memory_id}"
         self.logger.debug(f"[MEMORY KERNEL] remember_info result: {result}")
         return result
 
-    @kernel_function(name="recall_info",
-                     description="Search for relevant information")
-    async def recall_info(
-        self,
-        query: str,
-        agent_name: str,
-        max_results: int = 5
-    ) -> str:
+    @kernel_function(name="recall_info", description="Search for relevant information")
+    async def recall_info(self, query: str, agent_name: str, max_results: int = 5) -> str:
         """
         Search memory for relevant information.
 
@@ -83,8 +68,7 @@ class MemoryPlugin:
         Returns:
             str: Formatted search results
         """
-        self.logger.debug(
-            f"[MEMORY KERNEL] recall_info called by {agent_name}")
+        self.logger.debug(f"[MEMORY KERNEL] recall_info called by {agent_name}")
         self.logger.debug(f"[MEMORY KERNEL] Query: {query[:100]}...")
         self.logger.debug(f"[MEMORY KERNEL] Max results: {max_results}")
 
@@ -97,9 +81,12 @@ class MemoryPlugin:
 
         result = format_memory_results(results)
         self.logger.debug(
-            f"[MEMORY KERNEL] recall_info: Returning {
-                len(results)} results")
-        self.logger.debug(f"[MEMORY KERNEL] recall_info result preview: {
-                          result[:200]}...")
+            f"""[MEMORY KERNEL] recall_info: Returning {
+                len(results)} results"""
+        )
+        self.logger.debug(
+            f"""[MEMORY KERNEL] recall_info result preview: {
+                          result[:200]}..."""
+        )
 
         return result

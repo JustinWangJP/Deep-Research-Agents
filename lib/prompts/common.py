@@ -5,6 +5,7 @@ Now uses configuration-based values instead of hardcoded constants.
 """
 
 from datetime import datetime
+
 from lib.config.project_config import ProjectConfig
 from lib.utils.prompt_manager import PromptManager
 
@@ -40,6 +41,7 @@ def get_prompt_manager() -> PromptManager:
 # EXECUTION CONTEXT INFORMATION
 # ============================================================================
 
+
 def get_execution_context() -> str:
     """Get current execution context including date and time."""
     now = datetime.now()
@@ -52,6 +54,7 @@ def get_execution_context() -> str:
 # ============================================================================
 # DYNAMIC CONFIGURATION-BASED REQUIREMENTS
 # ============================================================================
+
 
 def get_common_internal_only_requirement() -> str:
     """Get internal-only requirement text from configuration."""
@@ -67,8 +70,8 @@ def get_common_search_functions() -> str:
     """Get search functions section from configuration."""
     prompt_manager = get_prompt_manager()
     if prompt_manager:
-        return f"## AVAILABLE SEARCH FUNCTIONS\n{
-            prompt_manager.get_search_functions_section()}"
+        return f"""## AVAILABLE SEARCH FUNCTIONS\n{
+            prompt_manager.get_search_functions_section()}"""
     else:
         # Fallback text
         return """## AVAILABLE SEARCH FUNCTIONS
@@ -164,7 +167,7 @@ IMAGE_MANAGEMENT_FUNCTIONS = {
     "get_image": "Retrieve image content by reference",
     "validate_images": "Validate image references in text content",
     "image_feedback": "Get user feedback on image usage",
-    "convert_paths": "Convert image references to local paths"
+    "convert_paths": "Convert image references to local paths",
 }
 
 IMAGE_HANDLING_RULES = """## IMAGE HANDLING RULES

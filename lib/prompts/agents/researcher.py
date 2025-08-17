@@ -4,12 +4,12 @@ Researcher Agent Prompts
 This module contains all prompts related to the researcher agents
 including individual researchers, lead researchers, and temperature-specific variations.
 """
+
 import logging
-from typing import Optional
 
 from lib.config.project_config import get_project_config
-from lib.utils.prompt_manager import PromptManager
 from lib.prompts.common import get_execution_context
+from lib.utils.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +19,7 @@ def get_researcher_prompt() -> str:
     try:
         config = get_project_config()
         prompt_manager = PromptManager(config)
-        company_context = prompt_manager.get_company_context()
-
+        prompt_manager.get_company_context()
 
         return f"""{get_execution_context()}
 
@@ -201,13 +200,12 @@ Remember: Your role is to conduct thorough research using all available informat
         return "Error generating prompt - please check configuration"
 
 
-def get_temperature_researcher_prompt(
-        temperature_type: str = "balanced") -> str:
+def get_temperature_researcher_prompt(temperature_type: str = "balanced") -> str:
     """Generate temperature-specific researcher prompt from configuration."""
     try:
         config = get_project_config()
         prompt_manager = PromptManager(config)
-        company_context = prompt_manager.get_company_context()
+        prompt_manager.get_company_context()
 
         # Get temperature configuration
         agent_config = config.get_agent_config(temperature_type)
@@ -215,7 +213,9 @@ def get_temperature_researcher_prompt(
             agent_config = config.get_agent_config("balanced")  # fallback
 
         temp_approach = agent_config.approach if agent_config else "Balanced Analysis"
-        temp_description = agent_config.description if agent_config else "Comprehensive analysis balancing facts and insights"
+        temp_description = (
+            agent_config.description if agent_config else "Comprehensive analysis balancing facts and insights"
+        )
 
         return f"""🌡️ {temp_approach.upper()} RESEARCHER AGENT 🌡️
 
@@ -320,40 +320,38 @@ def _get_lead_researcher_prompt_cached():
 def _get_conservative_researcher_prompt_cached():
     global _conservative_researcher_prompt
     if _conservative_researcher_prompt is None:
-        _conservative_researcher_prompt = get_temperature_researcher_prompt(
-            "conservative")
+        _conservative_researcher_prompt = get_temperature_researcher_prompt("conservative")
     return _conservative_researcher_prompt
 
 
 def _get_balanced_researcher_prompt_cached():
     global _balanced_researcher_prompt
     if _balanced_researcher_prompt is None:
-        _balanced_researcher_prompt = get_temperature_researcher_prompt(
-            "balanced")
+        _balanced_researcher_prompt = get_temperature_researcher_prompt("balanced")
     return _balanced_researcher_prompt
 
 
 def _get_creative_researcher_prompt_cached():
     global _creative_researcher_prompt
     if _creative_researcher_prompt is None:
-        _creative_researcher_prompt = get_temperature_researcher_prompt(
-            "creative")
+        _creative_researcher_prompt = get_temperature_researcher_prompt("creative")
     return _creative_researcher_prompt
+
 
 # For better backward compatibility, make the constant versions available
 
 
 def __getattr__(name):
     """Dynamic attribute access for backward compatibility."""
-    if name == 'RESEARCHER_PROMPT':
+    if name == "RESEARCHER_PROMPT":
         return _get_researcher_prompt_cached()
-    elif name == 'LEAD_RESEARCHER_PROMPT':
+    elif name == "LEAD_RESEARCHER_PROMPT":
         return _get_lead_researcher_prompt_cached()
-    elif name == 'CONSERVATIVE_RESEARCHER_PROMPT':
+    elif name == "CONSERVATIVE_RESEARCHER_PROMPT":
         return _get_conservative_researcher_prompt_cached()
-    elif name == 'BALANCED_RESEARCHER_PROMPT':
+    elif name == "BALANCED_RESEARCHER_PROMPT":
         return _get_balanced_researcher_prompt_cached()
-    elif name == 'CREATIVE_RESEARCHER_PROMPT':
+    elif name == "CREATIVE_RESEARCHER_PROMPT":
         return _get_creative_researcher_prompt_cached()
     else:
         raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

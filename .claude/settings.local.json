@@ -1,5 +1,4 @@
 {
-  "model": "kimi-k2-0711-preview",
   "permissions": {
     "allow": [
       "mcp__serena__check_onboarding_performed",
@@ -32,8 +31,11 @@
       "Bash(curl:*)",
       "Bash(python:*)",
       "Bash(pkill:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(echo:*)",
+      "Bash(uv sync:*)"
     ],
     "deny": []
-  }
+  },
+  "model": "kimi-k2-0711-preview"
 }

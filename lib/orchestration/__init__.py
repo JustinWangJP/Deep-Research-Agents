@@ -15,8 +15,8 @@ from .research_executor import ResearchExecutor
 from .temperature_manager import TemperatureManager
 
 __all__ = [
-    'LeadResearcherAgent',
-    'ParallelResearchPlugin',
-    'TemperatureManager',
-    'ResearchExecutor'
+    "LeadResearcherAgent",
+    "ParallelResearchPlugin",
+    "TemperatureManager",
+    "ResearchExecutor",
 ]

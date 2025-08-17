@@ -1,16 +1,16 @@
 """
 Web Search provider implementation using Tavily API.
 """
+
 import datetime as dt
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 from tavily import TavilyClient
 
-from ..base import (DocumentType, SearchProvider, SearchQuery, SearchResult,
-                    SearchStatistics)
+from ..base import DocumentType, SearchProvider, SearchQuery, SearchResult, SearchStatistics
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +23,10 @@ class WebSearchProvider(SearchProvider):
         self.config = config
 
         # Get Tavily API key from config
-        api_key = getattr(config, 'tavily_api_key', None)
+        api_key = getattr(config, "tavily_api_key", None)
         if not api_key:
             logger.error("Tavily API key not found in configuration")
-            raise ValueError(
-                "Tavily API key is required for web search functionality")
+            raise ValueError("Tavily API key is required for web search functionality")
 
         # Initialize Tavily client
         try:
@@ -35,11 +34,7 @@ class WebSearchProvider(SearchProvider):
             self.client = TavilyClient(api_key=api_key)
 
             # Set timeout on the underlying HTTP client if available
-            if hasattr(
-                    self.client,
-                    '_client') and hasattr(
-                    self.client._client,
-                    'timeout'):
+            if hasattr(self.client, "_client") and hasattr(self.client._client, "timeout"):
                 self.client._client.timeout = 30  # 30 second timeout
 
             logger.info("Tavily Web Search Provider initialized successfully")
@@ -48,23 +43,16 @@ class WebSearchProvider(SearchProvider):
             raise
 
         # Get configuration parameters
-        self.max_results = getattr(config, 'tavily_max_results', 10)
-        self.max_retries = getattr(config, 'tavily_max_retries', 3)
-        self.timeout = getattr(
-            config,
-            'tavily_timeout',
-            30)  # Default 30 seconds
+        self.max_results = getattr(config, "tavily_max_results", 10)
+        self.max_retries = getattr(config, "tavily_max_retries", 3)
+        self.timeout = getattr(config, "tavily_timeout", 30)  # Default 30 seconds
 
         # Statistics tracking
         self.search_count = 0
         self.error_count = 0
         self.last_search_time = None
 
-    async def search(
-        self,
-        query: SearchQuery,
-        document_type: DocumentType
-    ) -> List[SearchResult]:
+    async def search(self, query: SearchQuery, document_type: DocumentType) -> list[SearchResult]:
         """
         Perform web search operation using Tavily API.
 
@@ -76,13 +64,13 @@ class WebSearchProvider(SearchProvider):
             List of SearchResult objects
         """
         if document_type != DocumentType.WEB_SEARCH:
-            raise ValueError(
-                f"Document type {document_type} not supported by Web Search Provider")
+            raise ValueError(f"Document type {document_type} not supported by Web Search Provider")
 
         logger.info(
-            f"Performing web search for: '{
+            f"""Performing web search for: '{
                 self._truncate_text(
-                    query.text, 50)}'")
+                    query.text, 50)}'"""
+        )
 
         try:
             # Build search parameters
@@ -96,12 +84,12 @@ class WebSearchProvider(SearchProvider):
 
             # Update statistics
             self.search_count += 1
-            self.last_search_time = dt.datetime.now(
-                dt.timezone.utc).isoformat()
+            self.last_search_time = dt.datetime.now(dt.timezone.utc).isoformat()
 
             logger.info(
-                f"Web search completed successfully. Found {
-                    len(results)} results")
+                f"""Web search completed successfully. Found {
+                    len(results)} results"""
+            )
             return results
 
         except Exception as e:
@@ -112,11 +100,7 @@ class WebSearchProvider(SearchProvider):
             # Return empty results instead of raising exception
             return []
 
-    async def search_all(
-        self,
-        query: SearchQuery,
-        top_k_per_source: int = 5
-    ) -> List[SearchResult]:
+    async def search_all(self, query: SearchQuery, top_k_per_source: int = 5) -> list[SearchResult]:
         """Search across web (single source for web search)."""
         # Adjust query top_k for web search
         web_query = SearchQuery(
@@ -125,12 +109,12 @@ class WebSearchProvider(SearchProvider):
             filter_expression=query.filter_expression,
             use_hybrid_search=query.use_hybrid_search,
             use_semantic_search=query.use_semantic_search,
-            document_type=DocumentType.WEB_SEARCH
+            document_type=DocumentType.WEB_SEARCH,
         )
 
         return await self.search(web_query, DocumentType.WEB_SEARCH)
 
-    def _build_search_params(self, query: SearchQuery) -> Dict[str, Any]:
+    def _build_search_params(self, query: SearchQuery) -> dict[str, Any]:
         """Build search parameters for Tavily API."""
         search_params = {
             "query": query.text,
@@ -140,22 +124,25 @@ class WebSearchProvider(SearchProvider):
             "include_answer": False,
             "include_raw_content": False,
             "include_image_descriptions": False,
-            "include_images": False
+            "include_images": False,
         }
 
         logger.debug(f"Search parameters: {search_params}")
         return search_params
 
-    async def _execute_search_with_retry(self, search_params: Dict[str, Any]) -> Dict[str, Any]:
+    async def _execute_search_with_retry(self, search_params: dict[str, Any]) -> dict[str, Any]:
         """Execute search with retry logic and exponential backoff."""
         import asyncio
         import time
+
         last_exception = None
 
         for attempt in range(self.max_retries):
             try:
-                logger.debug(f"Search attempt {
-                             attempt + 1}/{self.max_retries}")
+                logger.debug(
+                    f"""Search attempt {
+                             attempt + 1}/{self.max_retries}"""
+                )
 
                 # Execute the search directly with timeout handling
                 start_time = time.time()
@@ -170,11 +157,13 @@ class WebSearchProvider(SearchProvider):
                         include_raw_content=search_params["include_raw_content"],
                         include_image_descriptions=search_params["include_image_descriptions"],
                         include_images=search_params["include_images"],
-                        timeout=self.timeout)
+                        timeout=self.timeout,
+                    )
                     elapsed_time = time.time() - start_time
                     logger.debug(
-                        f"Search completed in {
-                            elapsed_time:.2f} seconds")
+                        f"""Search completed in {
+                            elapsed_time:.2f} seconds"""
+                    )
 
                 except Exception as e:
                     elapsed_time = time.time() - start_time
@@ -183,26 +172,23 @@ class WebSearchProvider(SearchProvider):
                     error_str = str(e).lower()
                     if "timeout" in error_str or "timed out" in error_str:
                         raise TimeoutError(
-                            f"Search request timed out after {
-                                elapsed_time:.1f} seconds")
+                            f"""Search request timed out after {
+                                elapsed_time:.1f} seconds"""
+                        )
                     elif "502" in error_str or "bad gateway" in error_str:
                         raise ConnectionError(
-                            f"Server error (502 Bad Gateway) - Tavily API may be temporarily unavailable")
+                            f"Server error (502 Bad Gateway) - Tavily API may be temporarily unavailable"
+                        )
                     elif "503" in error_str or "service unavailable" in error_str:
-                        raise ConnectionError(
-                            f"Service temporarily unavailable (503) - Tavily API is down")
+                        raise ConnectionError(f"Service temporarily unavailable (503) - Tavily API is down")
                     elif "429" in error_str or "rate limit" in error_str:
-                        raise ConnectionError(
-                            f"Rate limit exceeded - too many requests to Tavily API")
+                        raise ConnectionError(f"Rate limit exceeded - too many requests to Tavily API")
                     elif "401" in error_str or "unauthorized" in error_str:
-                        raise ValueError(
-                            f"Unauthorized - invalid Tavily API key")
+                        raise ValueError(f"Unauthorized - invalid Tavily API key")
                     elif "403" in error_str or "forbidden" in error_str:
-                        raise ValueError(
-                            f"Forbidden - Tavily API access denied")
+                        raise ValueError(f"Forbidden - Tavily API access denied")
                     elif "404" in error_str or "not found" in error_str:
-                        raise ConnectionError(
-                            f"API endpoint not found - check Tavily API URL")
+                        raise ConnectionError(f"API endpoint not found - check Tavily API URL")
                     else:
                         raise
 
@@ -211,13 +197,13 @@ class WebSearchProvider(SearchProvider):
                     try:
                         response = json.loads(response)
                     except json.JSONDecodeError as e:
-                        raise ValueError(
-                            f"Invalid JSON response from Tavily API: {e}")
+                        raise ValueError(f"Invalid JSON response from Tavily API: {e}")
 
                 if not isinstance(response, dict):
                     raise ValueError(
-                        f"Unexpected response type: {
-                            type(response)}")
+                        f"""Unexpected response type: {
+                            type(response)}"""
+                    )
 
                 logger.debug(f"Search attempt {attempt + 1} succeeded")
                 return response
@@ -226,9 +212,10 @@ class WebSearchProvider(SearchProvider):
                 last_exception = e
                 error_type = type(e).__name__
                 logger.warning(
-                    f"Search attempt {
+                    f"""Search attempt {
                         attempt +
-                        1} failed ({error_type}): {e}")
+                        1} failed ({error_type}): {e}"""
+                )
 
                 if attempt < self.max_retries - 1:
                     # Adjust sleep time based on error type
@@ -250,27 +237,28 @@ class WebSearchProvider(SearchProvider):
                             sleep_time = 5 * (attempt + 1)
                     elif isinstance(e, ValueError):
                         # API key or authorization errors - don't retry
-                        logger.error(
-                            f"Authentication error - not retrying: {e}")
+                        logger.error(f"Authentication error - not retrying: {e}")
                         break
                     else:
-                        sleep_time = 2 ** attempt  # Exponential backoff for other errors
+                        sleep_time = 2**attempt  # Exponential backoff for other errors
 
-                    logger.info(f"Retrying in {sleep_time} seconds... (attempt {
-                                attempt + 2}/{self.max_retries})")
+                    logger.info(
+                        f"""Retrying in {sleep_time} seconds... (attempt {
+                                attempt + 2}/{self.max_retries})"""
+                    )
                     await asyncio.sleep(sleep_time)
 
         # If all retries failed
         logger.error(
-            f"All {
-                self.max_retries} search attempts failed. Last error: {last_exception}")
+            f"""All {
+                self.max_retries} search attempts failed. Last error: {last_exception}"""
+        )
         raise last_exception
 
-    def _process_search_response(
-            self, response: Dict[str, Any]) -> List[SearchResult]:
+    def _process_search_response(self, response: dict[str, Any]) -> list[SearchResult]:
         """Process and structure search response into SearchResult objects."""
         results = []
-        search_results = response.get('results', [])
+        search_results = response.get("results", [])
 
         if not search_results:
             logger.warning("No search results returned from Tavily API")
@@ -283,11 +271,11 @@ class WebSearchProvider(SearchProvider):
 
             try:
                 # Extract basic fields
-                url = result.get('url', '')
-                title = result.get('title', '')
-                content = result.get('content', '')
-                score = result.get('score', 0.0)
-                published_date = result.get('published_date', '')
+                url = result.get("url", "")
+                title = result.get("title", "")
+                content = result.get("content", "")
+                score = result.get("score", 0.0)
+                published_date = result.get("published_date", "")
 
                 # Create SearchResult object
                 search_result = SearchResult(
@@ -302,9 +290,10 @@ class WebSearchProvider(SearchProvider):
                         "title": title,
                         "domain": self._extract_domain(url),
                         "published_date": published_date,
-                        "crawled_at": dt.datetime.now(
-                            dt.timezone.utc).isoformat(),
-                        "source": "tavily"})
+                        "crawled_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+                        "source": "tavily",
+                    },
+                )
 
                 results.append(search_result)
 
@@ -320,17 +309,18 @@ class WebSearchProvider(SearchProvider):
         logger.info(f"Successfully processed {len(results)} search results")
         return results
 
-    def get_statistics(self) -> Dict[str, SearchStatistics]:
+    def get_statistics(self) -> dict[str, SearchStatistics]:
         """Get web search statistics."""
         return {
             "web_search": SearchStatistics(
                 provider_name="Tavily Web Search",
                 endpoint="https://api.tavily.com",
                 status="available" if self.is_available() else "unavailable",
-                error=None if self.error_count == 0 else f"{
-                    self.error_count} errors occurred",
+                error=(None if self.error_count == 0 else f"{self.error_count} errors occurred"),
                 document_count=self.search_count,
-                last_updated=self.last_search_time)}
+                last_updated=self.last_search_time,
+            )
+        }
 
     def is_available(self) -> bool:
         """Check if web search is available."""
@@ -338,8 +328,9 @@ class WebSearchProvider(SearchProvider):
             # Check if web search is enabled in configuration
             try:
                 from lib.config.project_config import get_project_config
+
                 project_config = get_project_config()
-                if project_config and hasattr(project_config, 'web_search'):
+                if project_config and hasattr(project_config, "web_search"):
                     if not project_config.web_search.enabled:
                         return False
             except Exception:
@@ -347,23 +338,23 @@ class WebSearchProvider(SearchProvider):
                 pass
 
             # Check if Tavily API key is configured
-            api_key = getattr(self.config, 'tavily_api_key', None)
+            api_key = getattr(self.config, "tavily_api_key", None)
             if not api_key:
                 return False
 
             # Check if client is initialized
-            if not hasattr(self, 'client') or self.client is None:
+            if not hasattr(self, "client") or self.client is None:
                 return False
 
             return True
         except Exception:
             return False
 
-    def get_supported_document_types(self) -> List[DocumentType]:
+    def get_supported_document_types(self) -> list[DocumentType]:
         """Get supported document types."""
         return [DocumentType.WEB_SEARCH]
 
-    async def search_web(self, search_params: Dict[str, Any]) -> Dict[str, Any]:
+    async def search_web(self, search_params: dict[str, Any]) -> dict[str, Any]:
         """Perform web search using Tavily API with enhanced parameters."""
         try:
             query = search_params.get("query", "")
@@ -388,7 +379,7 @@ class WebSearchProvider(SearchProvider):
                 "search_depth": search_depth,
                 "include_answer": include_answer,
                 "include_raw_content": include_raw_content,
-                "include_images": include_images or include_image_descriptions
+                "include_images": include_images or include_image_descriptions,
             }
 
             # Add time range if specified
@@ -409,15 +400,10 @@ class WebSearchProvider(SearchProvider):
 
     def _convert_time_range_to_days(self, time_range: str) -> int:
         """Convert time range string to days for Tavily API."""
-        time_mapping = {
-            "day": 1,
-            "week": 7,
-            "month": 30,
-            "year": 365
-        }
+        time_mapping = {"day": 1, "week": 7, "month": 30, "year": 365}
         return time_mapping.get(time_range, 7)  # Default to week
 
-    async def _execute_tavily_search(self, tavily_params: Dict[str, Any]) -> Dict[str, Any]:
+    async def _execute_tavily_search(self, tavily_params: dict[str, Any]) -> dict[str, Any]:
         """Execute Tavily search with error handling."""
         try:
             # Execute search (Tavily client may not be async, wrap if needed)
@@ -427,7 +413,9 @@ class WebSearchProvider(SearchProvider):
             logger.error(f"Tavily API call failed: {str(e)}")
             raise
 
-    def _format_web_search_response(self, response: Dict[str, Any], include_image_descriptions: bool = False) -> Dict[str, Any]:
+    def _format_web_search_response(
+        self, response: dict[str, Any], include_image_descriptions: bool = False
+    ) -> dict[str, Any]:
         """Format Tavily response for consistent output."""
         try:
             results = response.get("results", [])
@@ -440,7 +428,7 @@ class WebSearchProvider(SearchProvider):
                     "content": result.get("content", ""),
                     "score": result.get("score", 0.0),
                     "published_date": result.get("published_date", ""),
-                    "domain": self._extract_domain(result.get("url", ""))
+                    "domain": self._extract_domain(result.get("url", "")),
                 }
 
                 # Add raw content if available
@@ -452,7 +440,7 @@ class WebSearchProvider(SearchProvider):
             formatted_response = {
                 "results": formatted_results,
                 "query": response.get("query", ""),
-                "follow_up_questions": response.get("follow_up_questions", [])
+                "follow_up_questions": response.get("follow_up_questions", []),
             }
 
             # Add answer if available
@@ -477,7 +465,7 @@ class WebSearchProvider(SearchProvider):
         except Exception:
             return ""
 
-    def _validate_search_results(self, results: List[SearchResult]) -> bool:
+    def _validate_search_results(self, results: list[SearchResult]) -> bool:
         """Validate search results structure."""
         if not isinstance(results, list):
             return False
@@ -496,4 +484,4 @@ class WebSearchProvider(SearchProvider):
             return ""
         if len(text) <= max_length:
             return text
-        return text[:max_length - 3] + "..."
+        return text[: max_length - 3] + "..."

@@ -20,12 +20,9 @@ class ParallelResearchPlugin:
 
     @kernel_function(
         name="execute_parallel_research",
-        description="Execute comprehensive parallel research using multiple internal research agents with different temperature settings for varied analytical approaches on INTERNAL DOCUMENTS ONLY. NO external source access."
+        description="Execute comprehensive parallel research using multiple internal research agents with different temperature settings for varied analytical approaches on INTERNAL DOCUMENTS ONLY. NO external source access.",
     )
-    async def execute_parallel_research(
-        self,
-        query: str = "research query"
-    ) -> str:
+    async def execute_parallel_research(self, query: str = "research query") -> str:
         """
         Execute parallel research using multiple internal research agents with varied temperature settings.
 
@@ -35,21 +32,26 @@ class ParallelResearchPlugin:
         Returns:
             Synthesized research results from parallel agent execution with comprehensive coverage
         """
-        self.logger.info(f"🔬 [FUNCTION CALL] execute_parallel_research called with query: {
-                         query[:100]}...")
+        self.logger.info(
+            f"""🔬 [FUNCTION CALL] execute_parallel_research called with query: {
+                         query[:100]}..."""
+        )
 
         try:
             # Execute parallel research with temperature variation
-            result = await self.lead_researcher_agent._execute_concurrent_research(query, use_temperature_variation=True)
+            result = await self.lead_researcher_agent._execute_concurrent_research(
+                query, use_temperature_variation=True
+            )
 
-            self.logger.info(
-                f"✅ [FUNCTION CALL] Temperature-varied parallel research completed successfully")
+            self.logger.info(f"""✅ [FUNCTION CALL] Temperature-varied parallel research completed successfully""")
             return result
 
         except Exception as e:
             self.logger.error(
-                f"❌ [FUNCTION CALL] Error in execute_parallel_research: {
-                    str(e)}", exc_info=True)
+                f"""❌ [FUNCTION CALL] Error in execute_parallel_research: {
+                    str(e)}""",
+                exc_info=True,
+            )
             return f"""# Function Call Parallel Research - Error
 
 ## Research Query
@@ -62,8 +64,10 @@ Error occurred during parallel research execution: {str(e)}
 Error occurred during parallel research execution via function calling. Please fallback to direct execution mode.
 """
 
-    @kernel_function(name="get_research_agents_status",
-                     description="Get status information about available internal research agents")
+    @kernel_function(
+        name="get_research_agents_status",
+        description="Get status information about available internal research agents",
+    )
     async def get_research_agents_status(self) -> str:
         """
         Get status information about internal research agents.
@@ -86,13 +90,8 @@ Error occurred during parallel research execution via function calling. Please f
                 status_parts.append(f"- Description: {agent.description}")
 
                 # Check plugins
-                if hasattr(
-                        agent,
-                        'kernel') and agent.kernel and hasattr(
-                        agent.kernel,
-                        'plugins'):
-                    plugin_names = [
-                        plugin.name for plugin in agent.kernel.plugins.values()]
+                if hasattr(agent, "kernel") and agent.kernel and hasattr(agent.kernel, "plugins"):
+                    plugin_names = [plugin.name for plugin in agent.kernel.plugins.values()]
                     status_parts.append(f"- Plugins: {plugin_names}")
                 else:
                     status_parts.append("- Plugins: None")
@@ -107,6 +106,8 @@ Error occurred during parallel research execution via function calling. Please f
 
         except Exception as e:
             self.logger.error(
-                f"❌ [FUNCTION CALL] Error in get_research_agents_status: {
-                    str(e)}", exc_info=True)
+                f"""❌ [FUNCTION CALL] Error in get_research_agents_status: {
+                    str(e)}""",
+                exc_info=True,
+            )
             return f"Error: An error occurred while retrieving research agent status: {str(e)}"

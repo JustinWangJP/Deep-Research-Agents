@@ -5,14 +5,19 @@ Provides structured citation handling with CRUD operations, validation, and form
 
 # Custom agent implementations
 from .agents import CustomCitationAgent
+
 # Formatting utilities
 from .formatters import CitationFormatter
+
 # Business logic manager
 from .manager import CitationManager, SimpleCitationManager
+
 # Core models and data structures
 from .models import Citation, CitationRegistry
+
 # Semantic Kernel integration
 from .plugins import CitationPlugin, SimpleCitationPlugin
+
 # Validation utilities
 from .validators import CitationValidator
 
@@ -23,19 +28,18 @@ CitationAgentPlugin = SimpleCitationPlugin
 # Public API
 __all__ = [
     # Core classes
-    'Citation',
-    'CitationRegistry',
-    'CitationManager',
-    'CitationValidator',
-    'CitationFormatter',
-    'CitationPlugin',
-    'CustomCitationAgent',
-
+    "Citation",
+    "CitationRegistry",
+    "CitationManager",
+    "CitationValidator",
+    "CitationFormatter",
+    "CitationPlugin",
+    "CustomCitationAgent",
     # Backward compatibility
-    'SimpleCitationManager',
-    'SimpleCitationPlugin',
-    'CitationAgent',
-    'CitationAgentPlugin',
+    "SimpleCitationManager",
+    "SimpleCitationPlugin",
+    "CitationAgent",
+    "CitationAgentPlugin",
 ]
 
 # Package metadata

@@ -1,11 +1,11 @@
 """
 Search manager for orchestrating multiple search providers.
 """
-import logging
-from typing import Any, Dict, List, Optional
 
-from .base import (DocumentType, SearchProvider, SearchQuery, SearchResult,
-                   SearchStatistics)
+import logging
+from typing import Any
+
+from .base import DocumentType, SearchProvider, SearchQuery, SearchResult, SearchStatistics
 from .providers.azure_search import AzureSearchProvider
 from .providers.web_search import WebSearchProvider
 
@@ -18,7 +18,7 @@ class SearchManager:
     def __init__(self, config: Any):
         """Initialize search manager with available providers."""
         self.config = config
-        self.providers: Dict[str, SearchProvider] = {}
+        self.providers: dict[str, SearchProvider] = {}
 
         # Initialize available providers
         self._initialize_providers()
@@ -43,14 +43,13 @@ class SearchManager:
             # Try to get web search configuration from project config
             try:
                 from lib.config.project_config import get_project_config
+
                 project_config = get_project_config()
-                if project_config and hasattr(project_config, 'web_search'):
+                if project_config and hasattr(project_config, "web_search"):
                     web_search_enabled = project_config.web_search.enabled
-                    logger.info(
-                        f"Web search enabled from config: {web_search_enabled}")
+                    logger.info(f"Web search enabled from config: {web_search_enabled}")
             except Exception as e:
-                logger.warning(
-                    f"Could not load web search configuration, defaulting to enabled: {e}")
+                logger.warning(f"Could not load web search configuration, defaulting to enabled: {e}")
 
             if web_search_enabled:
                 # Initialize Web Search Provider
@@ -59,23 +58,24 @@ class SearchManager:
                     self.providers["web"] = web_provider
                     logger.info("Web Search Provider registered")
                 else:
-                    logger.warning(
-                        "Web Search Provider is not available - check Tavily API key configuration")
+                    logger.warning("Web Search Provider is not available - check Tavily API key configuration")
             else:
                 logger.info("Web Search Provider disabled by configuration")
         except Exception as e:
             logger.error(f"Failed to initialize Web Search Provider: {e}")
             logger.info("Web search functionality will be disabled")
 
-        logger.info(f"Search Manager initialized with {
-                    len(self.providers)} providers: {list(self.providers.keys())}")
+        logger.info(
+            f"""Search Manager initialized with {
+                    len(self.providers)} providers: {list(self.providers.keys())}"""
+        )
 
     async def search(
         self,
         query: SearchQuery,
         document_type: DocumentType,
-        provider_name: Optional[str] = None
-    ) -> List[SearchResult]:
+        provider_name: str | None = None,
+    ) -> list[SearchResult]:
         """
         Perform search using specified or best available provider.
 
@@ -89,8 +89,7 @@ class SearchManager:
         """
         provider = self._get_provider_for_search(document_type, provider_name)
         if not provider:
-            raise ValueError(
-                f"No available provider for document type {document_type}")
+            raise ValueError(f"No available provider for document type {document_type}")
 
         return await provider.search(query, document_type)
 
@@ -98,8 +97,8 @@ class SearchManager:
         self,
         query: SearchQuery,
         top_k_per_source: int = None,
-        provider_name: Optional[str] = None
-    ) -> List[SearchResult]:
+        provider_name: str | None = None,
+    ) -> list[SearchResult]:
         """
         Search across all available internal document types.
 
@@ -115,8 +114,9 @@ class SearchManager:
         if top_k_per_source is None:
             try:
                 from config.project_config import get_project_config
+
                 project_config = get_project_config()
-                if project_config and hasattr(project_config, 'search'):
+                if project_config and hasattr(project_config, "search"):
                     top_k_per_source = project_config.search.default_top_k_per_source
                 else:
                     top_k_per_source = 15  # fallback default
@@ -138,8 +138,8 @@ class SearchManager:
         self,
         query: SearchQuery,
         document_type: DocumentType,
-        max_results_per_provider: int = 10
-    ) -> Dict[str, List[SearchResult]]:
+        max_results_per_provider: int = 10,
+    ) -> dict[str, list[SearchResult]]:
         """
         Search using multiple providers and return results from each.
 
@@ -162,13 +162,12 @@ class SearchManager:
                         filter_expression=query.filter_expression,
                         use_hybrid_search=query.use_hybrid_search,
                         use_semantic_search=query.use_semantic_search,
-                        document_type=document_type
+                        document_type=document_type,
                     )
                     provider_results = await provider.search(search_query, document_type)
                     results[provider_name] = provider_results
                 except Exception as e:
-                    logger.warning(
-                        f"Search failed for provider {provider_name}: {e}")
+                    logger.warning(f"Search failed for provider {provider_name}: {e}")
                     results[provider_name] = []
 
         return results
@@ -179,8 +178,8 @@ class SearchManager:
         document_type: DocumentType,
         include_images: bool = True,
         include_text: bool = True,
-        provider_name: Optional[str] = None
-    ) -> List[SearchResult]:
+        provider_name: str | None = None,
+    ) -> list[SearchResult]:
         """
         Perform multimodal search with content type filtering.
 
@@ -196,11 +195,10 @@ class SearchManager:
         """
         provider = self._get_provider_for_search(document_type, provider_name)
         if not provider:
-            raise ValueError(
-                f"No available provider for document type {document_type}")
+            raise ValueError(f"No available provider for document type {document_type}")
 
         # Check if provider supports multimodal search
-        if hasattr(provider, 'search_multimodal'):
+        if hasattr(provider, "search_multimodal"):
             return await provider.search_multimodal(query, document_type, include_images, include_text)
         else:
             # Fallback to regular search with post-processing
@@ -226,12 +224,15 @@ class SearchManager:
                     # If no content type metadata, include by default
                     filtered_results.append(result)
 
-            logger.info(f"Multimodal search completed via fallback: {len(
-                filtered_results)} results " f"(images: {include_images}, text: {include_text})")
+            logger.info(
+                f"""Multimodal search completed via fallback: {len(
+                filtered_results)} results 
+                (images: {include_images}, text: {include_text})"""
+            )
 
             return filtered_results
 
-    def get_statistics(self) -> Dict[str, Dict[str, Any]]:
+    def get_statistics(self) -> dict[str, dict[str, Any]]:
         """Get statistics from all providers."""
         all_stats = {}
 
@@ -239,19 +240,14 @@ class SearchManager:
             try:
                 all_stats[provider_name] = provider.get_statistics()
             except Exception as e:
-                logger.error(
-                    f"Failed to get statistics from {provider_name}: {e}")
+                logger.error(f"Failed to get statistics from {provider_name}: {e}")
                 all_stats[provider_name] = {
-                    "error": SearchStatistics(
-                        provider_name=provider_name,
-                        status="error",
-                        error=str(e)
-                    )
+                    "error": SearchStatistics(provider_name=provider_name, status="error", error=str(e))
                 }
 
         return all_stats
 
-    def get_multimodal_statistics(self) -> Dict[str, Dict[str, Any]]:
+    def get_multimodal_statistics(self) -> dict[str, dict[str, Any]]:
         """Get multimodal-specific statistics from all providers."""
         stats = {}
 
@@ -261,13 +257,14 @@ class SearchManager:
 
                 # Add multimodal capabilities information
                 multimodal_info = {
-                    "supports_multimodal": hasattr(
-                        provider, 'search_multimodal'), "supports_image_search": hasattr(
-                        provider, 'search_multimodal'), "supports_image_understanding": hasattr(
-                        provider, 'search_multimodal'), "index_schemas": {}}
+                    "supports_multimodal": hasattr(provider, "search_multimodal"),
+                    "supports_image_search": hasattr(provider, "search_multimodal"),
+                    "supports_image_understanding": hasattr(provider, "search_multimodal"),
+                    "index_schemas": {},
+                }
 
                 # Get index schema information for multimodal indexes
-                if hasattr(provider, 'search_clients'):
+                if hasattr(provider, "search_clients"):
                     for doc_type, client in provider.search_clients.items():
                         index_name = client._index_name
 
@@ -285,56 +282,52 @@ class SearchManager:
 
                         # Try to access index schema if available
                         schema = None
-                        if hasattr(client, 'get_index_schema'):
+                        if hasattr(client, "get_index_schema"):
                             try:
                                 schema = client.get_index_schema()
                             except Exception as e:
-                                logger.warning(
-                                    f"Failed to get index schema for {doc_type}: {e}")
+                                logger.warning(f"Failed to get index schema for {doc_type}: {e}")
                                 # Try fallback method if primary method fails
-                                if hasattr(client, 'get_index_definition'):
+                                if hasattr(client, "get_index_definition"):
                                     try:
                                         schema = client.get_index_definition()
                                         logger.debug(
-                                            f"Successfully retrieved schema using fallback method for {doc_type}")
+                                            f"Successfully retrieved schema using fallback method for {doc_type}"
+                                        )
                                     except Exception as e2:
-                                        logger.warning(
-                                            f"Failed to get index definition for {doc_type}: {e2}")
-                        elif hasattr(client, 'get_index_definition'):
+                                        logger.warning(f"Failed to get index definition for {doc_type}: {e2}")
+                        elif hasattr(client, "get_index_definition"):
                             try:
                                 schema = client.get_index_definition()
                             except Exception as e:
-                                logger.warning(
-                                    f"Failed to get index definition for {doc_type}: {e}")
+                                logger.warning(f"Failed to get index definition for {doc_type}: {e}")
 
                         # Analyze schema for image understanding features
-                        if schema and 'fields' in schema:
-                            for field in schema['fields']:
-                                field_name = field.get('name', '')
+                        if schema and "fields" in schema:
+                            for field in schema["fields"]:
+                                field_name = field.get("name", "")
 
                                 # Detect image fields
-                                if field_name == 'image_document_id':
+                                if field_name == "image_document_id":
                                     has_image_document_id = True
                                     image_fields.append(field_name)
-                                elif 'image' in field_name.lower():
+                                elif "image" in field_name.lower():
                                     image_fields.append(field_name)
 
                                 # Detect text fields
-                                if field_name == 'content_text' or field_name == 'document_title':
+                                if field_name == "content_text" or field_name == "document_title":
                                     text_fields.append(field_name)
 
                                 # Detect location metadata (indicates image
                                 # understanding)
-                                if field_name == 'locationMetadata' and field.get(
-                                        'type') == 'Edm.ComplexType':
+                                if field_name == "locationMetadata" and field.get("type") == "Edm.ComplexType":
                                     has_location_metadata = True
 
                                     # Check for bounding polygons in nested
                                     # fields
-                                    if 'fields' in field:
-                                        for subfield in field['fields']:
-                                            if subfield.get(
-                                                    'name') == 'boundingPolygons':
+                                    if "fields" in field:
+                                        for subfield in field["fields"]:
+                                            if subfield.get("name") == "boundingPolygons":
                                                 has_bounding_polygons = True
 
                             # Check if verbalization is likely supported
@@ -342,15 +335,19 @@ class SearchManager:
 
                             # Check for vectorizers that support image
                             # verbalization
-                            if 'vectorSearch' in schema and 'vectorizers' in schema['vectorSearch']:
-                                for vectorizer in schema['vectorSearch']['vectorizers']:
-                                    if vectorizer.get('kind') == 'azureOpenAI' or 'multimodal' in vectorizer.get(
-                                            'name', '').lower():
+                            if "vectorSearch" in schema and "vectorizers" in schema["vectorSearch"]:
+                                for vectorizer in schema["vectorSearch"]["vectorizers"]:
+                                    if (
+                                        vectorizer.get("kind") == "azureOpenAI"
+                                        or "multimodal" in vectorizer.get("name", "").lower()
+                                    ):
                                         has_verbalization_capability = True
 
                         # Determine image understanding capabilities based on
                         # detected features
-                        supports_image_understanding = has_image_document_id or has_location_metadata or has_bounding_polygons
+                        supports_image_understanding = (
+                            has_image_document_id or has_location_metadata or has_bounding_polygons
+                        )
 
                         multimodal_info["index_schemas"][doc_type.value] = {
                             "index_name": index_name,
@@ -364,35 +361,33 @@ class SearchManager:
                             "has_bounding_polygons": has_bounding_polygons,
                             "image_fields": image_fields,
                             "text_fields": text_fields,
-                            "vector_field": getattr(provider, 'vector_field_map', {}).get(doc_type, "content_embedding")
+                            "vector_field": getattr(provider, "vector_field_map", {}).get(
+                                doc_type, "content_embedding"
+                            ),
                         }
 
                         # Add semantic configuration info if available
-                        if hasattr(provider, 'semantic_config_map'):
-                            semantic_config = provider.semantic_config_map.get(
-                                doc_type)
+                        if hasattr(provider, "semantic_config_map"):
+                            semantic_config = provider.semantic_config_map.get(doc_type)
                             if semantic_config:
                                 multimodal_info["index_schemas"][doc_type.value]["semantic_config"] = semantic_config
 
                 stats[provider_name] = {
                     "provider_stats": provider_stats,
-                    "multimodal_info": multimodal_info
+                    "multimodal_info": multimodal_info,
                 }
 
             except Exception as e:
-                logger.error(
-                    f"Failed to get multimodal statistics from {provider_name}: {e}")
-                stats[provider_name] = {
-                    "error": str(e)
-                }
+                logger.error(f"Failed to get multimodal statistics from {provider_name}: {e}")
+                stats[provider_name] = {"error": str(e)}
 
         return stats
 
-    def get_available_providers(self) -> List[str]:
+    def get_available_providers(self) -> list[str]:
         """Get list of available provider names."""
         return list(self.providers.keys())
 
-    def get_available_document_types(self) -> Dict[str, List[DocumentType]]:
+    def get_available_document_types(self) -> dict[str, list[DocumentType]]:
         """Get available document types per provider."""
         doc_types = {}
 
@@ -402,18 +397,15 @@ class SearchManager:
         return doc_types
 
     def _get_provider_for_search(
-        self,
-        document_type: DocumentType,
-        provider_name: Optional[str] = None
-    ) -> Optional[SearchProvider]:
+        self, document_type: DocumentType, provider_name: str | None = None
+    ) -> SearchProvider | None:
         """Get the best provider for a specific search."""
         if provider_name and provider_name in self.providers:
             provider = self.providers[provider_name]
             if self._provider_supports_document_type(provider, document_type):
                 return provider
             else:
-                logger.warning(
-                    f"Provider {provider_name} does not support {document_type}")
+                logger.warning(f"Provider {provider_name} does not support {document_type}")
 
         # Find first available provider that supports the document type
         for provider in self.providers.values():
@@ -422,10 +414,7 @@ class SearchManager:
 
         return None
 
-    def _provider_supports_document_type(
-            self,
-            provider: SearchProvider,
-            document_type: DocumentType) -> bool:
+    def _provider_supports_document_type(self, provider: SearchProvider, document_type: DocumentType) -> bool:
         """Check if provider supports the document type using value comparison."""
         supported_types = provider.get_supported_document_types()
 
@@ -434,11 +423,9 @@ class SearchManager:
             return True
 
         # Check for value-based match
-        document_type_value = getattr(
-            document_type, 'value', str(document_type))
+        document_type_value = getattr(document_type, "value", str(document_type))
         for supported_type in supported_types:
-            supported_value = getattr(
-                supported_type, 'value', str(supported_type))
+            supported_value = getattr(supported_type, "value", str(supported_type))
             if document_type_value == supported_value:
                 return True
 
@@ -458,11 +445,11 @@ class SearchManager:
             del self.providers[name]
             logger.info(f"{name.title()} Search Provider removed")
 
-    def get_provider(self, name: str) -> Optional[SearchProvider]:
+    def get_provider(self, name: str) -> SearchProvider | None:
         """Get a specific search provider by name."""
         return self.providers.get(name)
 
-    async def search_web(self, search_params: Dict[str, Any]) -> Dict[str, Any]:
+    async def search_web(self, search_params: dict[str, Any]) -> dict[str, Any]:
         """Perform web search using the WebSearchProvider."""
         try:
             # Get web search provider
@@ -470,16 +457,16 @@ class SearchManager:
             if not web_provider:
                 logger.error("Web search provider is not available")
                 return {"error": "Web search provider is not available", "results": []}
-            
+
             # Execute web search
             logger.info(f"Performing web search with query: {search_params.get('query', '')[:50]}")
-            
+
             # Create a basic SearchQuery from search_params for compatibility
             # Web provider may use search_params directly or convert as needed
             response = await web_provider.search_web(search_params)
-            
+
             return response
-            
+
         except Exception as e:
             logger.error(f"Web search failed: {str(e)}")
             return {"error": f"Web search failed: {str(e)}", "results": []}

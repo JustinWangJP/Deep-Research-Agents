@@ -4,15 +4,14 @@ Manager Agent Prompts
 This module contains all prompts related to the research manager agent
 that orchestrates multi-agent workflows.
 """
+
 import logging
 
 from lib.config.project_config import get_project_config
-from lib.utils.prompt_manager import PromptManager
 from lib.prompts.common import get_execution_context
+from lib.utils.prompt_manager import PromptManager
 
-from ..common import (COMMON_INTERNAL_ONLY_REQUIREMENT,
-                      COMMON_MEMORY_INTEGRATION, COMMON_SEARCH_FUNCTIONS,
-                      COMMON_SEARCH_POLICY)
+from ..common import COMMON_INTERNAL_ONLY_REQUIREMENT, COMMON_SEARCH_FUNCTIONS
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +24,11 @@ def get_manager_prompt() -> str:
 
     # Get quality thresholds from configuration
     quality_thresholds = config.get_researcher_quality_thresholds()
-    coverage_threshold = quality_thresholds.get('coverage_threshold', 0.75)
-    quality_threshold = quality_thresholds.get('quality_threshold', 0.80)
+    coverage_threshold = quality_thresholds.get("coverage_threshold", 0.75)
+    quality_threshold = quality_thresholds.get("quality_threshold", 0.80)
 
     # Get case number format
     case_format = config.get_case_number_format()
-
-
-
 
     return f"""{get_execution_context()}
 
@@ -85,7 +81,7 @@ All outputs must be in {company_context['company_language']} unless the user exp
 ## EXTERNAL SEARCH INTEGRATION - MANDATORY
 **WEB SEARCH UTILIZATION**: Agents must utilize web search capabilities to gather:
 - Current information and recent developments
-- External perspectives and industry insights  
+- External perspectives and industry insights
 - News, reports, and market analysis
 - Verification of internal findings through external sources
 **MULTI-SOURCE SYNTHESIS**: Combine internal document findings with external web search results for comprehensive analysis
@@ -118,7 +114,7 @@ All outputs must be in {company_context['company_language']} unless the user exp
 ### Core Workflow Pattern (Flexible Implementation):
 1. **Memory Foundation**: Search memory for relevant context ONLY if session is ongoing (memory starts empty at session start)
 2. **Research Strategy**: Store current approach in memory for continuity and iteration within session
-3. **Multi-Source Document Discovery**: 
+3. **Multi-Source Document Discovery**:
    - **Internal Search**: LeadResearcherAgent coordinates comprehensive searches across internal repositories with memory context integration (if available)
    - **External Search**: Web search for current information, news, and external perspectives using keyword-based queries
    - **Parallel Research Execution**: LeadResearcherAgent utilizes execute_parallel_research function to deploy multiple research agents with different analytical perspectives

@@ -6,17 +6,17 @@ This module contains prompts for final answer generation and structuring.
 
 from lib.prompts.common import get_execution_context
 
+
 def get_final_answer_prompt() -> str:
     """Generate dynamic final answer prompt with execution context."""
 
-
     from lib.config.project_config import get_project_config
     from lib.utils.prompt_manager import PromptManager
+
     config = get_project_config()
     prompt_manager = PromptManager(config)
 
     company_context = prompt_manager.get_company_context()
-
 
     return f"""{get_execution_context()}
 
@@ -55,7 +55,7 @@ Provide a comprehensive overview of key findings. You may use bullet points or n
 ### Detailed Findings
 Present primary research results in comprehensive narrative paragraphs or lists, beginning with necessary background information and context. Always explain what concepts, terms, or data points mean before presenting specific findings. Bullet points or numbered lists may be used for clarity and effective structuring, especially for enumerations, key findings, or references. Support findings with detailed explanations that connect data to broader implications. Include relevant case studies or examples within narrative paragraphs or lists that provide context and significance. **MANDATORY**: Include confidence assessments (0.0-1.0) for each major finding with comprehensive reasoning covering:
 - Source quality and reliability evaluation
-- Information consistency across multiple sources  
+- Information consistency across multiple sources
 - Verification methods and validation approach
 - Gap identification and impact analysis
 - Limitations and uncertainty acknowledgment
@@ -182,6 +182,7 @@ During the reporting period, the organization made significant progress in sever
 - Maintain objectivity and factual accuracy
 - Provide actionable insights with contextual explanations
 """
+
 
 # Backward compatibility - expose the prompt as a constant
 FINAL_ANSWER_PROMPT = get_final_answer_prompt()

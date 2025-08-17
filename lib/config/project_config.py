@@ -2,10 +2,11 @@
 Project-specific configuration management with restructured YAML support.
 Handles loading and parsing of the new agent-centric project_config.yaml structure.
 """
+
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import yaml
 
@@ -26,6 +27,7 @@ class FieldMappingsConfig:
 @dataclass
 class CompanyConfig:
     """Company-specific configuration."""
+
     name: str = ""
     display_name: str = ""
     language: str = "en"
@@ -35,6 +37,7 @@ class CompanyConfig:
 @dataclass
 class DocumentTypeConfig:
     """Document type configuration."""
+
     name: str = ""
     display_name: str = ""
     display_name_en: str = ""
@@ -42,8 +45,8 @@ class DocumentTypeConfig:
     index_name: str = ""
     semantic_config: str = ""
     vector_field: str = ""
-    key_fields: List[str] = None
-    content_fields: List[str] = None
+    key_fields: list[str] = None
+    content_fields: list[str] = None
 
     def __post_init__(self):
         if self.key_fields is None:
@@ -55,6 +58,7 @@ class DocumentTypeConfig:
 @dataclass
 class SearchDefaultConfig:
     """Search default settings configuration."""
+
     default_top_k: int = 20
     default_top_k_per_source: int = 5
     max_results_limit: int = 100
@@ -66,22 +70,24 @@ class SearchDefaultConfig:
 @dataclass
 class ExtractionConfig:
     """Content extraction configuration."""
+
     content_truncate_length: int = 1000
     fallback_filename: str = "unknown_file"
-    supported_extensions: List[str] = None
+    supported_extensions: list[str] = None
 
     def __post_init__(self):
         if self.supported_extensions is None:
-            self.supported_extensions = ['.pdf', '.txt', '.docx']
+            self.supported_extensions = [".pdf", ".txt", ".docx"]
 
 
 @dataclass
 class SearchExampleConfig:
     """Search example configuration for each document type."""
+
     description: str = ""
     function_name: str = ""
-    query_examples: List[str] = None
-    parameters: Dict[str, Any] = None
+    query_examples: list[str] = None
+    parameters: dict[str, Any] = None
 
     def __post_init__(self):
         if self.query_examples is None:
@@ -93,9 +99,10 @@ class SearchExampleConfig:
 @dataclass
 class DomainTerminologyConfig:
     """Domain-specific terminology configuration."""
+
     record_id_field: str = ""
     case_number_format: str = ""
-    key_concepts: Dict[str, List[str]] = None
+    key_concepts: dict[str, list[str]] = None
 
     def __post_init__(self):
         if self.key_concepts is None:
@@ -105,6 +112,7 @@ class DomainTerminologyConfig:
 @dataclass
 class AgentTemperatureConfig:
     """Agent temperature variation configuration."""
+
     temp: float = 0.3
     approach: str = ""
     description: str = ""
@@ -113,9 +121,10 @@ class AgentTemperatureConfig:
 @dataclass
 class ResearcherConfig:
     """Researcher agent configuration."""
-    quality_thresholds: Dict[str, Any] = None
-    default_model_settings: Dict[str, Any] = None
-    report_indicators: Dict[str, List[str]] = None
+
+    quality_thresholds: dict[str, Any] = None
+    default_model_settings: dict[str, Any] = None
+    report_indicators: dict[str, list[str]] = None
 
     def __post_init__(self):
         if self.quality_thresholds is None:
@@ -129,9 +138,10 @@ class ResearcherConfig:
 @dataclass
 class ReportWriterConfig:
     """Report writer agent configuration."""
-    quality_requirements: Dict[str, Any] = None
-    sections: Dict[str, List[str]] = None
-    templates: Dict[str, Dict[str, str]] = None
+
+    quality_requirements: dict[str, Any] = None
+    sections: dict[str, list[str]] = None
+    templates: dict[str, dict[str, str]] = None
 
     def __post_init__(self):
         if self.quality_requirements is None:
@@ -145,8 +155,9 @@ class ReportWriterConfig:
 @dataclass
 class CitationConfig:
     """Citation agent configuration."""
-    processing: Dict[str, Any] = None
-    extraction_settings: Dict[str, Any] = None
+
+    processing: dict[str, Any] = None
+    extraction_settings: dict[str, Any] = None
 
     def __post_init__(self):
         if self.processing is None:
@@ -158,7 +169,8 @@ class CitationConfig:
 @dataclass
 class CredibilityCriticConfig:
     """Credibility critic agent configuration."""
-    assessment: Dict[str, Any] = None
+
+    assessment: dict[str, Any] = None
 
     def __post_init__(self):
         if self.assessment is None:
@@ -168,8 +180,9 @@ class CredibilityCriticConfig:
 @dataclass
 class ReflectionCriticConfig:
     """Reflection critic agent configuration."""
-    evaluation_criteria: Dict[str, str] = None
-    improvement_suggestions: Dict[str, str] = None
+
+    evaluation_criteria: dict[str, str] = None
+    improvement_suggestions: dict[str, str] = None
 
     def __post_init__(self):
         if self.evaluation_criteria is None:
@@ -181,8 +194,9 @@ class ReflectionCriticConfig:
 @dataclass
 class SummarizerConfig:
     """Summarizer agent configuration."""
-    summarization_settings: Dict[str, Any] = None
-    output_format: Dict[str, List[str]] = None
+
+    summarization_settings: dict[str, Any] = None
+    output_format: dict[str, list[str]] = None
 
     def __post_init__(self):
         if self.summarization_settings is None:
@@ -194,8 +208,9 @@ class SummarizerConfig:
 @dataclass
 class TranslatorConfig:
     """Translator agent configuration."""
-    supported_languages: List[str] = None
-    translation_settings: Dict[str, bool] = None
+
+    supported_languages: list[str] = None
+    translation_settings: dict[str, bool] = None
 
     def __post_init__(self):
         if self.supported_languages is None:
@@ -207,8 +222,9 @@ class TranslatorConfig:
 @dataclass
 class ModelConfig:
     """Model configuration."""
-    default_settings: Dict[str, Any] = None
-    agent_specific: Dict[str, Dict[str, Any]] = None
+
+    default_settings: dict[str, Any] = None
+    agent_specific: dict[str, dict[str, Any]] = None
 
     def __post_init__(self):
         if self.default_settings is None:
@@ -220,13 +236,15 @@ class ModelConfig:
 @dataclass
 class SystemConfig:
     """System-level configuration."""
+
     company: CompanyConfig
-    logging: Dict[str, Any]
+    logging: dict[str, Any]
 
 
 @dataclass
 class WebSearchConfig:
     """Web search configuration."""
+
     enabled: bool = False
     fallback_enabled: bool = True
     max_results: int = 10
@@ -236,16 +254,18 @@ class WebSearchConfig:
 @dataclass
 class DataSourcesConfig:
     """Data sources configuration."""
+
     web_search: WebSearchConfig
-    document_types: Dict[str, DocumentTypeConfig]
+    document_types: dict[str, DocumentTypeConfig]
 
 
 @dataclass
 class SearchConfig:
     """Complete search configuration."""
+
     default_settings: SearchDefaultConfig
     extraction: ExtractionConfig
-    examples: Dict[str, SearchExampleConfig]
+    examples: dict[str, SearchExampleConfig]
 
     @property
     def default_top_k(self) -> int:
@@ -281,14 +301,15 @@ class SearchConfig:
 @dataclass
 class AgentsConfig:
     """All agents configuration."""
-    temperature_variations: Dict[str, AgentTemperatureConfig]
+
+    temperature_variations: dict[str, AgentTemperatureConfig]
     researcher: ResearcherConfig
     report_writer: ReportWriterConfig
     citation: CitationConfig
     credibility_critic: CredibilityCriticConfig
     reflection_critic: ReflectionCriticConfig
     summarizer: SummarizerConfig
-    translator: Optional[TranslatorConfig] = None
+    translator: TranslatorConfig | None = None
 
 
 class ProjectConfig:
@@ -298,152 +319,148 @@ class ProjectConfig:
         """Initialize project configuration (only supports new agent-centric YAML)."""
         if config_file is None:
             workspace_root = self._find_workspace_root()
-            config_file = os.path.join(
-                workspace_root, "config", "project_config.yaml")
+            config_file = os.path.join(workspace_root, "config", "project_config.yaml")
         self.config_file = config_file
         self.config = self._load_config()
 
         # Parse new format only
-        system_config = self.config.get('system', {})
-        self.company = CompanyConfig(**system_config.get('company', {}))
-        self.logging = system_config.get('logging', {})
+        system_config = self.config.get("system", {})
+        self.company = CompanyConfig(**system_config.get("company", {}))
+        self.logging = system_config.get("logging", {})
 
-        data_sources = self.config.get('data_sources', {})
+        data_sources = self.config.get("data_sources", {})
 
         # Web search configuration
-        web_search_config = data_sources.get('web_search', {})
+        web_search_config = data_sources.get("web_search", {})
         self.web_search = WebSearchConfig(**web_search_config)
 
         # Document types configuration
-        doc_types_config = data_sources.get('document_types', {})
+        doc_types_config = data_sources.get("document_types", {})
         self.document_types = []
         for name, config in doc_types_config.items():
             doc_config = DocumentTypeConfig(
                 name=name,
-                display_name=config.get('display_name', ''),
-                display_name_en=config.get('display_name_en', ''),
-                func_description=config.get('func_description', ''),
-                index_name=config['index_name'],
-                semantic_config=config['semantic_config'],
-                vector_field=config['vector_field'],
-                key_fields=config['key_fields'],
-                content_fields=config['content_fields']
+                display_name=config.get("display_name", ""),
+                display_name_en=config.get("display_name_en", ""),
+                func_description=config.get("func_description", ""),
+                index_name=config["index_name"],
+                semantic_config=config["semantic_config"],
+                vector_field=config["vector_field"],
+                key_fields=config["key_fields"],
+                content_fields=config["content_fields"],
             )
             self.document_types.append(doc_config)
 
-        field_mappings_data = data_sources.get('field_mappings', {})
+        field_mappings_data = data_sources.get("field_mappings", {})
         self.field_mappings = FieldMappingsConfig(**field_mappings_data)
 
-        domain_terminology_data = data_sources.get('domain_terminology', {})
+        domain_terminology_data = data_sources.get("domain_terminology", {})
         self.domain_terms = DomainTerminologyConfig(**domain_terminology_data)
 
-        search_config = self.config.get('search', {})
+        search_config = self.config.get("search", {})
         self.search_config = SearchConfig(
-            default_settings=SearchDefaultConfig(**search_config.get('default_settings', {})),
-            extraction=ExtractionConfig(**search_config.get('extraction', {})),
+            default_settings=SearchDefaultConfig(**search_config.get("default_settings", {})),
+            extraction=ExtractionConfig(**search_config.get("extraction", {})),
             examples={
-                name: SearchExampleConfig(**config)
-                for name, config in search_config.get('examples', {}).items()
-            }
+                name: SearchExampleConfig(**config) for name, config in search_config.get("examples", {}).items()
+            },
         )
         self.search = self.search_config.default_settings
         self.extraction = self.search_config.extraction
         self.search_examples = self.search_config.examples
 
-        agents_config = self.config.get('agents', {})
-        temp_variations = agents_config.get('temperature_variations', {})
-        self.agents = {
-            name: AgentTemperatureConfig(
-                **config) for name,
-            config in temp_variations.items()}
+        agents_config = self.config.get("agents", {})
+        temp_variations = agents_config.get("temperature_variations", {})
+        self.agents = {name: AgentTemperatureConfig(**config) for name, config in temp_variations.items()}
         self.temperature_variations = self.agents  # Alias for easy access
 
-        self.researcher_config = ResearcherConfig(
-            **agents_config.get('researcher', {}))
-        self.report_writer_config = ReportWriterConfig(
-            **agents_config.get('report_writer', {}))
-        self.citation_config = CitationConfig(
-            **agents_config.get('citation', {}))
-        self.credibility_config = CredibilityCriticConfig(
-            **agents_config.get('credibility_critic', {}))
-        self.reflection_config = ReflectionCriticConfig(
-            **agents_config.get('reflection_critic', {}))
-        self.summarizer_config = SummarizerConfig(
-            **agents_config.get('summarizer', {}))
-        translator_config = agents_config.get('translator')
-        self.translator_config = TranslatorConfig(
-            **translator_config) if translator_config else None
+        self.researcher_config = ResearcherConfig(**agents_config.get("researcher", {}))
+        self.report_writer_config = ReportWriterConfig(**agents_config.get("report_writer", {}))
+        self.citation_config = CitationConfig(**agents_config.get("citation", {}))
+        self.credibility_config = CredibilityCriticConfig(**agents_config.get("credibility_critic", {}))
+        self.reflection_config = ReflectionCriticConfig(**agents_config.get("reflection_critic", {}))
+        self.summarizer_config = SummarizerConfig(**agents_config.get("summarizer", {}))
+        translator_config = agents_config.get("translator")
+        self.translator_config = TranslatorConfig(**translator_config) if translator_config else None
 
-        models_config = self.config.get('models', {})
+        models_config = self.config.get("models", {})
         self.model_config = ModelConfig(**models_config)
 
         # Compatibility property
         citation_processing = self.citation_config.processing
-        self.citations = type('CitationConfig', (), {
-            'internal_document_label': citation_processing.get('internal_document_label', ''),
-            'no_citations_text': citation_processing.get('no_citations_text', ''),
-            'reference_section_title': citation_processing.get('reference_section_title', {}),
-            'language_indicators': citation_processing.get('language_indicators', {})
-        })()
+        self.citations = type(
+            "CitationConfig",
+            (),
+            {
+                "internal_document_label": citation_processing.get("internal_document_label", ""),
+                "no_citations_text": citation_processing.get("no_citations_text", ""),
+                "reference_section_title": citation_processing.get("reference_section_title", {}),
+                "language_indicators": citation_processing.get("language_indicators", {}),
+            },
+        )()
         self.quality_thresholds = self.researcher_config.quality_thresholds
         self.credibility = self.credibility_config.assessment
         self.report_quality = self.report_writer_config.quality_requirements
-        self.report_quality['sections'] = self.report_writer_config.sections
+        self.report_quality["sections"] = self.report_writer_config.sections
         self.report_templates = {
-            'error_template': self.report_writer_config.templates,
-            'quality_indicators': self.researcher_config.report_indicators
+            "error_template": self.report_writer_config.templates,
+            "quality_indicators": self.researcher_config.report_indicators,
         }
 
-        logger.info(f"Project configuration loaded for {
-                    self.company.name} (new format only)")
+        logger.info(
+            f"""Project configuration loaded for {
+                    self.company.name} (new format only)"""
+        )
 
     def _is_file_restructured(self, config_file: str) -> bool:
         """Check if the config file uses the new restructured format."""
         try:
-            with open(config_file, 'r', encoding='utf-8') as f:
+            with open(config_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
-            return 'system' in config and 'data_sources' in config and 'agents' in config
+            return "system" in config and "data_sources" in config and "agents" in config
         except BaseException:
             return False
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict[str, Any]:
         """Load configuration from YAML file."""
         try:
-            with open(self.config_file, 'r', encoding='utf-8') as f:
+            with open(self.config_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
             logger.info(
-                f"Loaded project configuration from {
-                    self.config_file}")
+                f"""Loaded project configuration from {
+                    self.config_file}"""
+            )
             return config
         except FileNotFoundError:
             raise FileNotFoundError(
-                f"Project configuration file not found: {
-                    self.config_file}")
+                f"""Project configuration file not found: {
+                    self.config_file}"""
+            )
         except yaml.YAMLError as e:
             raise ValueError(f"Invalid YAML in configuration file: {e}")
 
     # === Existing methods for backward compatibility ===
 
-    def get_document_type(self, name: str) -> Optional[DocumentTypeConfig]:
+    def get_document_type(self, name: str) -> DocumentTypeConfig | None:
         """Get document type configuration by name."""
         for dt in self.document_types:
             if dt.name == name:
                 return dt
         return None
 
-    def get_document_types_by_index(self) -> Dict[str, DocumentTypeConfig]:
+    def get_document_types_by_index(self) -> dict[str, DocumentTypeConfig]:
         """Get mapping of index names to document types."""
         return {dt.index_name: dt for dt in self.document_types}
 
-    def get_semantic_config_map(self) -> Dict[str, str]:
+    def get_semantic_config_map(self) -> dict[str, str]:
         """Get mapping of document type names to semantic configurations."""
         return {dt.name: dt.semantic_config for dt in self.document_types}
 
-    def get_vector_field_map(self) -> Dict[str, str]:
+    def get_vector_field_map(self) -> dict[str, str]:
         """Get mapping of document type names to vector fields."""
         return {dt.name: dt.vector_field for dt in self.document_types}
 
-    def get_content_fields(self, document_type_name: str) -> List[str]:
+    def get_content_fields(self, document_type_name: str) -> list[str]:
         """Get content fields for a specific document type."""
         dt = self.get_document_type(document_type_name)
         return dt.content_fields if dt else []
@@ -454,8 +471,7 @@ class ProjectConfig:
             language = self.company.language
 
         return self.citations.reference_section_title.get(
-            language,
-            self.citations.reference_section_title.get('ja', 'References')
+            language, self.citations.reference_section_title.get("ja", "References")
         )
 
     def detect_language(self, text: str) -> str:
@@ -467,82 +483,72 @@ class ProjectConfig:
 
     def get_logging_message(self, key: str) -> str:
         """Get company-specific logging message."""
-        return self.logging.get('company_specific_messages', {}).get(key, "")
+        return self.logging.get("company_specific_messages", {}).get(key, "")
 
     def is_supported_file_extension(self, filename: str) -> bool:
         """Check if file extension is supported."""
-        return any(ext in filename.lower()
-                   for ext in self.extraction.supported_extensions)
+        return any(ext in filename.lower() for ext in self.extraction.supported_extensions)
 
     def get_field_mappings(self, key: str) -> list:
         """Get field mappings for a given key."""
         return getattr(self.field_mappings, key, [])
 
-    def get_agent_config(
-            self,
-            agent_type: str) -> Optional[AgentTemperatureConfig]:
+    def get_agent_config(self, agent_type: str) -> AgentTemperatureConfig | None:
         """Get agent configuration by type."""
         return self.agents.get(agent_type)
 
     def get_error_template(self, template_type: str) -> str:
         """Get error template by type."""
-        return self.report_templates.get(
-            'error_template', {}).get(
-            template_type, "")
+        return self.report_templates.get("error_template", {}).get(template_type, "")
 
-    def get_quality_indicators(self, indicator_type: str) -> List[str]:
+    def get_quality_indicators(self, indicator_type: str) -> list[str]:
         """Get quality indicators by type."""
-        return self.report_templates.get(
-            'quality_indicators', {}).get(
-            indicator_type, [])
+        return self.report_templates.get("quality_indicators", {}).get(indicator_type, [])
 
-    def get_search_example(
-            self, document_type: str) -> Optional[Dict[str, Any]]:
+    def get_search_example(self, document_type: str) -> dict[str, Any] | None:
         """Get search example configuration for a document type as a dictionary."""
         search_example_config = self.search_examples.get(document_type)
         if search_example_config:
             # Convert SearchExampleConfig to dictionary
             return {
-                'description': search_example_config.description,
-                'function_name': search_example_config.function_name,
-                'query_examples': search_example_config.query_examples,
-                'parameters': search_example_config.parameters
+                "description": search_example_config.description,
+                "function_name": search_example_config.function_name,
+                "query_examples": search_example_config.query_examples,
+                "parameters": search_example_config.parameters,
             }
         return None
 
-    def get_domain_key_concepts(self, concept_category: str) -> List[str]:
+    def get_domain_key_concepts(self, concept_category: str) -> list[str]:
         """Get domain key concepts by category."""
         return self.domain_terms.key_concepts.get(concept_category, [])
 
     def get_credibility_score_range(self, level: str) -> str:
         """Get credibility score range for a level (high/medium/low)."""
-        return self.credibility.get('score_ranges', {}).get(level, "")
+        return self.credibility.get("score_ranges", {}).get(level, "")
 
     def get_credibility_criteria(self, criterion: str) -> str:
         """Get credibility evaluation criterion description."""
-        return self.credibility.get(
-            'evaluation_criteria', {}).get(
-            criterion, "")
+        return self.credibility.get("evaluation_criteria", {}).get(criterion, "")
 
-    def get_credibility_quality_indicators(self) -> List[str]:
+    def get_credibility_quality_indicators(self) -> list[str]:
         """Get credibility quality indicators."""
-        return self.credibility.get('quality_indicators', [])
+        return self.credibility.get("quality_indicators", [])
 
-    def get_required_report_sections(self) -> List[str]:
+    def get_required_report_sections(self) -> list[str]:
         """Get required report sections."""
-        return self.report_quality.get('sections', {}).get('required', [])
+        return self.report_quality.get("sections", {}).get("required", [])
 
-    def get_optional_report_sections(self) -> List[str]:
+    def get_optional_report_sections(self) -> list[str]:
         """Get optional report sections."""
-        return self.report_quality.get('sections', {}).get('optional', [])
+        return self.report_quality.get("sections", {}).get("optional", [])
 
     def is_citation_verification_mandatory(self) -> bool:
         """Check if citation verification is mandatory."""
-        return self.report_quality.get('citation_verification_mandatory', True)
+        return self.report_quality.get("citation_verification_mandatory", True)
 
     def is_internal_sources_only(self) -> bool:
         """Check if only internal sources are allowed."""
-        return self.report_quality.get('internal_sources_only', True)
+        return self.report_quality.get("internal_sources_only", True)
 
     def get_case_number_format(self) -> str:
         """Get the standard case number format."""
@@ -558,11 +564,10 @@ class ProjectConfig:
 
     # === New methods for restructured config ===
 
-    def get_agent_model_settings(self, agent_name: str) -> Dict[str, Any]:
+    def get_agent_model_settings(self, agent_name: str) -> dict[str, Any]:
         """Get model settings for a specific agent."""
-        if hasattr(self, 'model_config'):
-            agent_settings = self.model_config.agent_specific.get(
-                agent_name, {})
+        if hasattr(self, "model_config"):
+            agent_settings = self.model_config.agent_specific.get(agent_name, {})
             default_settings = self.model_config.default_settings
             # Merge with defaults
             settings = default_settings.copy()
@@ -570,115 +575,114 @@ class ProjectConfig:
             return settings
         return {}
 
-    def get_researcher_quality_thresholds(self) -> Dict[str, Any]:
+    def get_researcher_quality_thresholds(self) -> dict[str, Any]:
         """Get researcher quality thresholds."""
-        if hasattr(self, 'researcher_config'):
+        if hasattr(self, "researcher_config"):
             return self.researcher_config.quality_thresholds
         return self.quality_thresholds
 
-    def get_report_writer_sections(self) -> Dict[str, List[str]]:
+    def get_report_writer_sections(self) -> dict[str, list[str]]:
         """Get report writer section configuration."""
-        if hasattr(self, 'report_writer_config'):
+        if hasattr(self, "report_writer_config"):
             return self.report_writer_config.sections
-        return self.report_quality.get('sections', {})
+        return self.report_quality.get("sections", {})
 
-    def get_citation_processing_config(self) -> Dict[str, Any]:
+    def get_citation_processing_config(self) -> dict[str, Any]:
         """Get citation processing configuration."""
-        if hasattr(self, 'citation_config'):
+        if hasattr(self, "citation_config"):
             return self.citation_config.processing
         return {}
 
-    def get_credibility_assessment_config(self) -> Dict[str, Any]:
+    def get_credibility_assessment_config(self) -> dict[str, Any]:
         """Get credibility assessment configuration."""
-        if hasattr(self, 'credibility_config'):
+        if hasattr(self, "credibility_config"):
             return self.credibility_config.assessment
         return self.credibility
 
-    def get_summarizer_settings(self) -> Dict[str, Any]:
+    def get_summarizer_settings(self) -> dict[str, Any]:
         """Get summarizer configuration."""
-        if hasattr(self, 'summarizer_config'):
+        if hasattr(self, "summarizer_config"):
             return self.summarizer_config.summarization_settings
         return {}
 
-    def get_reflection_criteria(self) -> Dict[str, Any]:
+    def get_reflection_criteria(self) -> dict[str, Any]:
         """Get reflection critic evaluation criteria."""
-        if hasattr(self, 'reflection_config'):
+        if hasattr(self, "reflection_config"):
             return self.reflection_config.evaluation_criteria
         return {}
 
-    def get_reflection_improvement_suggestions(self) -> Dict[str, Any]:
+    def get_reflection_improvement_suggestions(self) -> dict[str, Any]:
         """Get reflection critic improvement suggestions."""
-        if hasattr(self, 'reflection_config'):
+        if hasattr(self, "reflection_config"):
             return self.reflection_config.improvement_suggestions
         return {}
 
-    def get_report_writer_config(self) -> Dict[str, Any]:
+    def get_report_writer_config(self) -> dict[str, Any]:
         """Get report writer configuration."""
-        if hasattr(self, 'report_writer_config'):
+        if hasattr(self, "report_writer_config"):
             return {
-                'quality_requirements': self.report_writer_config.quality_requirements,
-                'sections': self.report_writer_config.sections,
-                'templates': self.report_writer_config.templates}
-        # Fallback for legacy config
-        return {
-            'quality_requirements': self.report_quality.get(
-                'quality_requirements', {}), 'sections': self.report_quality.get(
-                'sections', {}), 'templates': self.report_templates}
-
-    def get_citation_config(self) -> Dict[str, Any]:
-        """Get citation agent configuration."""
-        if hasattr(self, 'citation_config'):
-            return {
-                'processing': self.citation_config.processing,
-                'extraction_settings': self.citation_config.extraction_settings
+                "quality_requirements": self.report_writer_config.quality_requirements,
+                "sections": self.report_writer_config.sections,
+                "templates": self.report_writer_config.templates,
             }
         # Fallback for legacy config
-        citation_processing = getattr(self, 'citations', None)
+        return {
+            "quality_requirements": self.report_quality.get("quality_requirements", {}),
+            "sections": self.report_quality.get("sections", {}),
+            "templates": self.report_templates,
+        }
+
+    def get_citation_config(self) -> dict[str, Any]:
+        """Get citation agent configuration."""
+        if hasattr(self, "citation_config"):
+            return {
+                "processing": self.citation_config.processing,
+                "extraction_settings": self.citation_config.extraction_settings,
+            }
+        # Fallback for legacy config
+        citation_processing = getattr(self, "citations", None)
         if citation_processing:
             return {
-                'processing': {
-                    'internal_document_label': citation_processing.internal_document_label,
-                    'no_citations_text': citation_processing.no_citations_text,
-                    'reference_section_title': citation_processing.reference_section_title,
-                    'language_indicators': citation_processing.language_indicators},
-                'extraction_settings': {}}
-        return {'processing': {}, 'extraction_settings': {}}
-
-    def get_credibility_config(self) -> Dict[str, Any]:
-        """Get credibility critic configuration."""
-        if hasattr(self, 'credibility_config'):
-            return {
-                'assessment': self.credibility_config.assessment
+                "processing": {
+                    "internal_document_label": citation_processing.internal_document_label,
+                    "no_citations_text": citation_processing.no_citations_text,
+                    "reference_section_title": citation_processing.reference_section_title,
+                    "language_indicators": citation_processing.language_indicators,
+                },
+                "extraction_settings": {},
             }
-        return {'assessment': self.credibility}
+        return {"processing": {}, "extraction_settings": {}}
 
-    def get_summarizer_config(self) -> Dict[str, Any]:
+    def get_credibility_config(self) -> dict[str, Any]:
+        """Get credibility critic configuration."""
+        if hasattr(self, "credibility_config"):
+            return {"assessment": self.credibility_config.assessment}
+        return {"assessment": self.credibility}
+
+    def get_summarizer_config(self) -> dict[str, Any]:
         """Get summarizer agent configuration."""
-        if hasattr(self, 'summarizer_config'):
+        if hasattr(self, "summarizer_config"):
             return {
-                'summarization_settings': self.summarizer_config.summarization_settings,
-                'output_format': self.summarizer_config.output_format}
-        return {'summarization_settings': {}, 'output_format': {}}
+                "summarization_settings": self.summarizer_config.summarization_settings,
+                "output_format": self.summarizer_config.output_format,
+            }
+        return {"summarization_settings": {}, "output_format": {}}
 
-    def get_translator_config(self) -> Dict[str, Any]:
+    def get_translator_config(self) -> dict[str, Any]:
         """Get translator agent configuration."""
-        if hasattr(self, 'translator_config') and self.translator_config:
+        if hasattr(self, "translator_config") and self.translator_config:
             return {
-                'supported_languages': self.translator_config.supported_languages,
-                'translation_settings': self.translator_config.translation_settings}
-        return {
-            'supported_languages': [
-                'ja',
-                'en'],
-            'translation_settings': {}}
+                "supported_languages": self.translator_config.supported_languages,
+                "translation_settings": self.translator_config.translation_settings,
+            }
+        return {"supported_languages": ["ja", "en"], "translation_settings": {}}
 
-    def get_index_names(self) -> Dict[str, str]:
+    def get_index_names(self) -> dict[str, str]:
         """Get mapping of document type names to their index names."""
         index_mapping = {}
         for doc_type in self.document_types:
             index_mapping[doc_type.name] = doc_type.index_name
         return index_mapping
-
 
     def _find_workspace_root(self) -> str:
         """Find the workspace root directory by looking for key files."""
@@ -686,11 +690,7 @@ class ProjectConfig:
         current_dir = os.path.dirname(os.path.abspath(__file__))
 
         # Look for workspace indicators (main.py, pyproject.toml, etc.)
-        workspace_indicators = [
-            'main.py',
-            'pyproject.toml',
-            'requirements.txt',
-            '.git']
+        workspace_indicators = ["main.py", "pyproject.toml", "requirements.txt", ".git"]
 
         # Traverse up the directory tree
         while current_dir != os.path.dirname(current_dir):  # Not at root
@@ -700,10 +700,8 @@ class ProjectConfig:
             current_dir = os.path.dirname(current_dir)
 
         # Fallback to the traditional method if indicators not found
-        fallback_root = os.path.dirname(
-            os.path.dirname(os.path.dirname(__file__)))
-        logger.warning(
-            f"Workspace root not found via indicators, using fallback: {fallback_root}")
+        fallback_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        logger.warning(f"Workspace root not found via indicators, using fallback: {fallback_root}")
         return fallback_root
 
 

@@ -10,52 +10,52 @@ REST APIエンドポイントとOpenAPIドキュメント、WebSocketサポー�
 - リアルタイム更新: WebSocketによるライブ更新サポート
 """
 
-import sys
 import os
+import sys
 import uuid
 from datetime import datetime, timezone
-from typing import List, Optional, Dict, Any
+from functools import wraps
+from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Query, Path
+from fastapi import FastAPI, HTTPException, Path, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from functools import wraps
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from lib.config import get_config
-from lib.search.manager import SearchManager
-from lib.memory.manager import MemoryManager
-from lib.citation.manager import CitationManager
-from lib.agent_factory import create_agents_with_memory
-from lib.memory.plugin import MemoryPlugin
-
 # Import models
 from models import (
-    HealthResponse,
     AgentInfo,
-    AgentStats,
     AgentListResponse,
-    SearchQuery,
-    SearchResponse,
-    SearchProviderInfo,
-    DocumentType,
-    MemoryEntryCreate,
-    MemoryEntry,
-    MemoryStats,
-    MemoryListResponse,
-    CitationCreate,
+    AgentStats,
+    BaseResponse,
     Citation,
+    CitationCreate,
     CitationListResponse,
     CitationUpdate,
     ConfigInfo,
-    ResearchTaskCreate,
+    DocumentType,
+    HealthResponse,
+    MemoryEntry,
+    MemoryEntryCreate,
+    MemoryListResponse,
+    MemoryStats,
     ResearchTask,
+    ResearchTaskCreate,
     ResearchTaskListResponse,
-    BaseResponse,
+    SearchProviderInfo,
+    SearchQuery,
+    SearchResponse,
 )
+
+from lib.agent_factory import create_agents_with_memory
+from lib.citation.manager import CitationManager
+from lib.config import get_config
+from lib.memory.manager import MemoryManager
+from lib.memory.plugin import MemoryPlugin
+from lib.search.manager import SearchManager
 
 # Create FastAPI app with enhanced OpenAPI docs
 app = FastAPI(
@@ -109,19 +109,20 @@ app.add_middleware(
 )
 
 # Global instances
-search_manager: Optional[SearchManager] = None
-memory_manager: Optional[MemoryManager] = None
-citation_manager: Optional[CitationManager] = None
-agents: Optional[Dict[str, Any]] = None
-memory_plugin: Optional[MemoryPlugin] = None
+search_manager: SearchManager | None = None
+memory_manager: MemoryManager | None = None
+citation_manager: CitationManager | None = None
+agents: dict[str, Any] | None = None
+memory_plugin: MemoryPlugin | None = None
 
 # Response time tracking
-response_time_history: List[float] = []
+response_time_history: list[float] = []
 MAX_HISTORY_SIZE = 100
 
 
 def track_response_time(func):
     """Decorator to track actual response times for API endpoints"""
+
     @wraps(func)
     async def wrapper(*args, **kwargs):
         start_time = datetime.now(timezone.utc)
@@ -138,6 +139,7 @@ def track_response_time(func):
             if len(response_time_history) > MAX_HISTORY_SIZE:
                 response_time_history.pop(0)
             raise e
+
     return wrapper
 
 
@@ -146,9 +148,9 @@ def get_average_response_time() -> float:
     if not response_time_history:
         # Fallback baseline when no history exists
         return 250.0
-    
+
     recent_responses = response_time_history[-20:]  # Last 20 responses
-    return round(sum(recent_responses) / len(recent_responses),2)
+    return round(sum(recent_responses) / len(recent_responses), 2)
 
 
 # Startup event
@@ -219,10 +221,9 @@ async def health_check():
 @track_response_time
 async def list_agents(
     page: int = Query(1, ge=1, description="ページ番号（1から開始）"),
-    page_size: int = Query(
-        20, ge=1, le=100, description="1ページあたりのアイテム数（最大100）"
-    ),
-    status: Optional[str] = Query(
+    page_size: int = Query(20, ge=1, le=100, description="1ページあたりのアイテム数（最大100）"),
+    status: str
+    | None = Query(
         None,
         description="エージェントステータスでフィルタリング（idle, running, completed, error）",
     ),
@@ -290,12 +291,15 @@ async def get_agent_stats():
 
         # メモリ使用量を計算（簡易的な実装）
         import psutil
+
         memory_usage = psutil.virtual_memory()
         memory_usage_str = f"{memory_usage.percent:.1f}% ({memory_usage.used // (1024**3):.1f}GB / {memory_usage.total // (1024**3):.1f}GB)"
 
         # 実際のエージェント統計を計算
-        active_agents = sum(1 for agent in agents.values() if hasattr(agent, 'status') and getattr(agent, 'status', 'idle') == 'running')
-        
+        active_agents = sum(
+            1 for agent in agents.values() if hasattr(agent, "status") and getattr(agent, "status", "idle") == "running"
+        )
+
         # 実際の平均応答時間を計算
         average_response_time = get_average_response_time()
 
@@ -309,7 +313,7 @@ async def get_agent_stats():
             uptime_percent=100.0,
         )
         return stats
-    except Exception as e:
+    except Exception:
         # エラーが発生した場合のフォールバック
         return AgentStats(
             total_agents=len(agents) if agents else 0,
@@ -416,9 +420,7 @@ async def search_documents(search_request: SearchQuery):
         raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
 
 
-@app.get(
-    "/api/v1/search/providers", response_model=List[SearchProviderInfo], tags=["search"]
-)
+@app.get("/api/v1/search/providers", response_model=list[SearchProviderInfo], tags=["search"])
 @track_response_time
 async def get_search_providers():
     """Get all available search providers"""
@@ -437,9 +439,7 @@ async def get_search_providers():
     ]
 
 
-@app.get(
-    "/api/v1/search/document-types", response_model=List[DocumentType], tags=["search"]
-)
+@app.get("/api/v1/search/document-types", response_model=list[DocumentType], tags=["search"])
 @track_response_time
 async def get_document_types():
     """Get all available document types"""
@@ -489,9 +489,7 @@ async def store_memory(memory_request: MemoryEntryCreate):
         )
 
         # Fetch the created entry
-        search_results = await memory_manager.search_memory(
-            query=memory_request.content, max_results=1
-        )
+        search_results = await memory_manager.search_memory(query=memory_request.content, max_results=1)
 
         if search_results:
             return MemoryEntry(
@@ -517,9 +515,9 @@ async def search_memory(
     query: str = Query(..., description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
-    entry_type: Optional[str] = Query(None, description="Filter by entry type"),
-    source: Optional[str] = Query(None, description="Filter by source"),
-    memory_type: Optional[str] = Query(None, description="Filter by memory type"),
+    entry_type: str | None = Query(None, description="Filter by entry type"),
+    source: str | None = Query(None, description="Filter by source"),
+    memory_type: str | None = Query(None, description="Filter by memory type"),
 ):
     """Search memory entries with filtering and pagination"""
     if not memory_manager:
@@ -634,23 +632,19 @@ async def create_citation(citation_request: CitationCreate):
                 updated_at=datetime.now(timezone.utc),
             )
 
-        raise HTTPException(
-            status_code=500, detail="Failed to retrieve created citation"
-        )
+        raise HTTPException(status_code=500, detail="Failed to retrieve created citation")
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Citation creation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Citation creation failed: {str(e)}")
 
 
 @app.get("/api/v1/citations", response_model=CitationListResponse, tags=["citations"])
 async def list_citations(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
-    case_number: Optional[str] = Query(None, description="Filter by case number"),
-    source_title: Optional[str] = Query(None, description="Filter by source title"),
-    tags: Optional[str] = Query(None, description="Filter by tags (comma-separated)"),
+    case_number: str | None = Query(None, description="Filter by case number"),
+    source_title: str | None = Query(None, description="Filter by source title"),
+    tags: str | None = Query(None, description="Filter by tags (comma-separated)"),
 ):
     """List citations with filtering and pagination"""
     if not citation_manager:
@@ -664,10 +658,7 @@ async def list_citations(
         tag_list = tags.split(",") if tags else []
 
         for citation in citations:
-            if (
-                source_title
-                and source_title.lower() not in citation.source_title.lower()
-            ):
+            if source_title and source_title.lower() not in citation.source_title.lower():
                 continue
             if tag_list and not any(tag in citation.tags for tag in tag_list):
                 continue
@@ -707,9 +698,7 @@ async def list_citations(
         )
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Citation listing failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Citation listing failed: {str(e)}")
 
 
 @app.get("/api/v1/citations/{citation_id}", response_model=Citation, tags=["citations"])
@@ -746,9 +735,7 @@ async def update_citation(
         raise HTTPException(status_code=503, detail="Citation service not available")
 
     try:
-        success = citation_manager.update_citation(
-            citation_id, **citation_update.dict(exclude_unset=True)
-        )
+        success = citation_manager.update_citation(citation_id, **citation_update.dict(exclude_unset=True))
         if not success:
             raise HTTPException(status_code=404, detail="Citation not found")
 
@@ -767,20 +754,14 @@ async def update_citation(
                 updated_at=datetime.now(timezone.utc),
             )
 
-        raise HTTPException(
-            status_code=500, detail="Failed to retrieve updated citation"
-        )
+        raise HTTPException(status_code=500, detail="Failed to retrieve updated citation")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Citation update failed: {str(e)}")
 
 
-@app.delete(
-    "/api/v1/citations/{citation_id}", response_model=BaseResponse, tags=["citations"]
-)
-async def delete_citation(
-    citation_id: str = Path(..., description="Citation identifier")
-):
+@app.delete("/api/v1/citations/{citation_id}", response_model=BaseResponse, tags=["citations"])
+async def delete_citation(citation_id: str = Path(..., description="Citation identifier")):
     """Delete a citation"""
     if not citation_manager:
         raise HTTPException(status_code=503, detail="Citation service not available")
@@ -793,9 +774,7 @@ async def delete_citation(
         return BaseResponse(message=f"Citation {citation_id} deleted successfully")
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Citation deletion failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Citation deletion failed: {str(e)}")
 
 
 # Configuration endpoints
@@ -871,7 +850,7 @@ async def create_research_task(task_request: ResearchTaskCreate):
 async def list_research_tasks(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
-    status: Optional[str] = Query(None, description="Filter by status"),
+    status: str | None = Query(None, description="Filter by status"),
 ):
     """List research tasks with pagination"""
     # Placeholder - would fetch from task storage
@@ -881,9 +860,7 @@ async def list_research_tasks(
 @app.get("/api/v1/research/{task_id}", response_model=ResearchTask, tags=["research"])
 async def get_research_task(task_id: str = Path(..., description="Task identifier")):
     """Get detailed information about a research task"""
-    raise HTTPException(
-        status_code=501, detail="Research task management not yet implemented"
-    )
+    raise HTTPException(status_code=501, detail="Research task management not yet implemented")
 
 
 # Error handlers
@@ -910,4 +887,10 @@ async def internal_server_error_handler(request, exc):
 
 
 if __name__ == "__main__":
-    uvicorn.run("deep-research-ui.backend.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
+    uvicorn.run(
+        "deep-research-ui.backend.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="info",
+    )

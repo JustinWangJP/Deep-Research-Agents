@@ -209,6 +209,17 @@ DEBUG_MODE=true uv run python main.py --query "test question"
 - **mypy**: Type checking (strict mode)
 - **flake8**: Linting
 
+### Lint Commands
+```bash
+# Run all linting tools
+uv run black . && uv run isort . && uv run flake8 lib/ && uv run mypy lib/
+
+# Run individual linting tools
+uv run flake8 lib/                          # Core library linting
+uv run flake8 deep-research-ui/backend/     # Backend linting
+uv run flake8 --fix lib/                    # Auto-fix where possible
+```
+
 ### Common Patterns
 - **Async/Await**: All I/O operations are async
 - **Dependency Injection**: Plugins and services injected

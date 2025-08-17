@@ -6,7 +6,7 @@ analytical approaches in research agents.
 """
 
 from copy import deepcopy
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..prompts.agents.researcher import get_temperature_researcher_prompt
 
@@ -20,16 +20,24 @@ class TemperatureManager:
     """Manages temperature configurations for research agents."""
 
     @classmethod
-    def _get_default_temperature_configs(cls) -> List[Dict[str, Any]]:
+    def _get_default_temperature_configs(cls) -> list[dict[str, Any]]:
         """Get default temperature configurations as fallback."""
         return [
-            {"temp": 0.2, "approach": "Conservative detailed analysis", "agent_suffix": "CONSERVATIVE"},
+            {
+                "temp": 0.2,
+                "approach": "Conservative detailed analysis",
+                "agent_suffix": "CONSERVATIVE",
+            },
             {"temp": 0.6, "approach": "Balanced analysis", "agent_suffix": "BALANCED"},
-            {"temp": 0.9, "approach": "Creative divergent thinking", "agent_suffix": "CREATIVE"}
+            {
+                "temp": 0.9,
+                "approach": "Creative divergent thinking",
+                "agent_suffix": "CREATIVE",
+            },
         ]
 
     @classmethod
-    def _get_project_temperature_configs(cls) -> List[Dict[str, Any]]:
+    def _get_project_temperature_configs(cls) -> list[dict[str, Any]]:
         """Get temperature configurations from project config."""
         if get_project_config is None:
             return cls._get_default_temperature_configs()
@@ -39,22 +47,23 @@ class TemperatureManager:
             configs = []
 
             # Get configurations in order: conservative, balanced, creative
-            for agent_type in ['conservative', 'balanced', 'creative']:
+            for agent_type in ["conservative", "balanced", "creative"]:
                 agent_config = project_config.get_agent_config(agent_type)
                 if agent_config:
-                    configs.append({
-                        "temp": agent_config.temp,
-                        "approach": agent_config.approach,
-                        "agent_suffix": agent_type.upper()
-                    })
+                    configs.append(
+                        {
+                            "temp": agent_config.temp,
+                            "approach": agent_config.approach,
+                            "agent_suffix": agent_type.upper(),
+                        }
+                    )
 
             return configs if configs else cls._get_default_temperature_configs()
         except Exception:
             return cls._get_default_temperature_configs()
 
     @classmethod
-    def get_temperature_configs(
-            cls, use_temperature_variation: bool = False) -> List[Dict[str, Any]]:
+    def get_temperature_configs(cls, use_temperature_variation: bool = False) -> list[dict[str, Any]]:
         """
         Get temperature configuration for agents.
 
@@ -72,12 +81,11 @@ class TemperatureManager:
             return [
                 {"temp": None, "approach": "Standard analysis", "agent_suffix": "1"},
                 {"temp": None, "approach": "Standard analysis", "agent_suffix": "2"},
-                {"temp": None, "approach": "Standard analysis", "agent_suffix": "3"}
+                {"temp": None, "approach": "Standard analysis", "agent_suffix": "3"},
             ]
 
     @classmethod
-    def create_model_config_with_temperature(
-            cls, base_config: Dict[str, Any], temperature: float) -> Dict[str, Any]:
+    def create_model_config_with_temperature(cls, base_config: dict[str, Any], temperature: float) -> dict[str, Any]:
         """
         Create a model configuration with specified temperature.
 
@@ -106,10 +114,7 @@ class TemperatureManager:
         return f"RESEARCHER_{suffix}"
 
     @classmethod
-    def get_agent_description(
-            cls,
-            approach: str,
-            temperature: float = None) -> str:
+    def get_agent_description(cls, approach: str, temperature: float = None) -> str:
         """
         Generate agent description based on approach and temperature.
 
@@ -121,16 +126,13 @@ class TemperatureManager:
             Formatted agent description
         """
         if temperature is not None:
-            return f"Performs comprehensive INTERNAL DOCUMENT SEARCH ONLY with {
-                approach} (temperature={temperature}). NO external source access."
+            return f"""Performs comprehensive INTERNAL DOCUMENT SEARCH ONLY with {
+                approach} (temperature={temperature}). NO external source access."""
         else:
             return "Performs comprehensive INTERNAL DOCUMENT SEARCH ONLY using Azure AI Search and returns structured JSON results from internal repositories. NO external source access."
 
     @classmethod
-    def get_temperature_instructions(
-            cls,
-            temperature: float,
-            approach: str) -> str:
+    def get_temperature_instructions(cls, temperature: float, approach: str) -> str:
         """
         Get temperature-specific instructions.
 
@@ -149,10 +151,10 @@ class TemperatureManager:
     def _get_temperature_type_from_value(cls, temperature: float) -> str:
         """
         Map temperature value to temperature type string.
-        
+
         Args:
             temperature: Temperature value (0.0-1.0)
-            
+
         Returns:
             Temperature type string for prompt generation
         """

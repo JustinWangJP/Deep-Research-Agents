@@ -6,31 +6,23 @@ multiple internal research agents using concurrent orchestration.
 """
 
 import logging
-import sys
-from typing import Any, AsyncIterable, Awaitable, Callable, List, Optional
+from collections.abc import AsyncIterable, Awaitable, Callable
+from typing import override  # pragma: no cover
+from typing import Any
 
 from pydantic import PrivateAttr
 from semantic_kernel.agents.agent import Agent, AgentResponseItem, AgentThread
-from semantic_kernel.agents.chat_completion.chat_completion_agent import (
-    ChatCompletionAgent, ChatHistoryAgentThread)
+from semantic_kernel.agents.chat_completion.chat_completion_agent import ChatCompletionAgent, ChatHistoryAgentThread
 from semantic_kernel.agents.runtime.core.core_runtime import CoreRuntime
 from semantic_kernel.contents.chat_message_content import ChatMessageContent
-from semantic_kernel.contents.streaming_chat_message_content import \
-    StreamingChatMessageContent
+from semantic_kernel.contents.streaming_chat_message_content import StreamingChatMessageContent
 from semantic_kernel.contents.utils.author_role import AuthorRole
 from semantic_kernel.functions.kernel_arguments import KernelArguments
 from semantic_kernel.kernel import Kernel
-from semantic_kernel.utils.telemetry.agent_diagnostics.decorators import \
-    trace_agent_invocation
-
-if sys.version_info >= (3, 12):
-    from typing import override  # pragma: no cover
-else:
-    from typing_extensions import override  # pragma: no cover
+from semantic_kernel.utils.telemetry.agent_diagnostics.decorators import trace_agent_invocation
 
 from ..config import get_config
-from ..prompts.agents.researcher import (LEAD_RESEARCHER_PROMPT,
-                                         RESEARCHER_PROMPT)
+from ..prompts.agents.researcher import LEAD_RESEARCHER_PROMPT, RESEARCHER_PROMPT
 from ..search import ModularSearchPlugin
 from ..util import get_azure_openai_service
 from .parallel_research_plugin import ParallelResearchPlugin
@@ -44,19 +36,13 @@ class LeadResearcherAgent(ChatCompletionAgent):
     """
 
     # Use PrivateAttr for all custom attributes to avoid Pydantic conflicts
-    _research_agents: List[Agent] = PrivateAttr(default_factory=list)
-    _runtime: Optional[CoreRuntime] = PrivateAttr(default=None)
-    _kernel: Optional[Kernel] = PrivateAttr(default=None)
-    _instruction_template: Optional[str] = PrivateAttr(default=None)
-    _research_executor: ResearchExecutor = PrivateAttr(
-        default_factory=ResearchExecutor)
+    _research_agents: list[Agent] = PrivateAttr(default_factory=list)
+    _runtime: CoreRuntime | None = PrivateAttr(default=None)
+    _kernel: Kernel | None = PrivateAttr(default=None)
+    _instruction_template: str | None = PrivateAttr(default=None)
+    _research_executor: ResearchExecutor = PrivateAttr(default_factory=ResearchExecutor)
 
-    def __init__(
-            self,
-            agent_count: int = 1,
-            kernel: Kernel = None,
-            plugins=None,
-            **kwargs):
+    def __init__(self, agent_count: int = 1, kernel: Kernel = None, plugins=None, **kwargs):
         """
         Initialize the Lead Researcher as a ChatCompletionAgent with internal orchestration capabilities.
 
@@ -67,14 +53,16 @@ class LeadResearcherAgent(ChatCompletionAgent):
             **kwargs: Additional arguments passed to parent class
         """
         logger = logging.getLogger(__name__)
-        logger.info(f"🔬 Initializing LeadResearcherAgent with {
-                    agent_count} internal research agents")
+        logger.info(
+            f"""🔬 Initializing LeadResearcherAgent with {
+                    agent_count} internal research agents"""
+        )
         # Extract plugins from kwargs if passed there
         if plugins is None:
-            plugins = kwargs.pop('plugins', [])
+            plugins = kwargs.pop("plugins", [])
 
         # Store instruction template for later use
-        instruction_template = kwargs.pop('instructions', None)
+        instruction_template = kwargs.pop("instructions", None)
 
         # Create parallel research plugin for this agent
         parallel_research_plugin = ParallelResearchPlugin(self)
@@ -90,33 +78,33 @@ class LeadResearcherAgent(ChatCompletionAgent):
             name="LeadResearcherAgent",
             description="Advanced lead researcher that coordinates multiple internal research agents for comprehensive research tasks using ONLY internal document repositories. Features multi-round parallel execution and adaptive research capabilities for internal data analysis.",
             instructions=LEAD_RESEARCHER_PROMPT,
-            service=get_azure_openai_service(
-                get_config().get_model_config("gpt41")),
+            service=get_azure_openai_service(get_config().get_model_config("gpt41")),
             plugins=plugins,
-            **kwargs)
+            **kwargs,
+        )
 
         # Set private attributes using object.__setattr__ to avoid Pydantic
         # validation
-        object.__setattr__(self, '_instruction_template', instruction_template)
-        object.__setattr__(self, '_kernel', kernel)
-        object.__setattr__(self, '_runtime', None)
-        object.__setattr__(self, '_research_executor', ResearchExecutor())
+        object.__setattr__(self, "_instruction_template", instruction_template)
+        object.__setattr__(self, "_kernel", kernel)
+        object.__setattr__(self, "_runtime", None)
+        object.__setattr__(self, "_research_executor", ResearchExecutor())
 
         # Extract memory plugin from this agent's plugins to share with
         # internal agents
         memory_plugin = self._find_memory_plugin(plugins)
         self._memory_plugin = memory_plugin
         # Create initial research agents
-        research_agents = self._create_initial_research_agents(
-            memory_plugin)
-        object.__setattr__(self, '_research_agents', research_agents)
+        research_agents = self._create_initial_research_agents(memory_plugin)
+        object.__setattr__(self, "_research_agents", research_agents)
 
         logger.info("🔬 LeadResearcherAgent initialization completed")
         logger.info(
-            f"🔌 Total plugins registered: {
-                len(plugins)} (including ParallelResearchPlugin)")
+            f"""🔌 Total plugins registered: {
+                len(plugins)} (including ParallelResearchPlugin)"""
+        )
 
-    def _find_memory_plugin(self, plugins: List[Any]) -> Optional[Any]:
+    def _find_memory_plugin(self, plugins: list[Any]) -> Any | None:
         """Find memory plugin from the provided plugins list."""
         logger = logging.getLogger(__name__)
         for plugin in plugins:
@@ -125,8 +113,7 @@ class LeadResearcherAgent(ChatCompletionAgent):
                 return plugin
         return None
 
-    def _create_initial_research_agents(
-            self, memory_plugin: Any) -> List[Agent]:
+    def _create_initial_research_agents(self, memory_plugin: Any) -> list[Agent]:
         """Create initial set of research agents."""
         logger = logging.getLogger(__name__)
         config = get_config()
@@ -145,11 +132,12 @@ class LeadResearcherAgent(ChatCompletionAgent):
 
         for i in range(3):
             logger.info(
-                f"🤖 Creating research agent {
+                f"""🤖 Creating research agent {
                     i +
                     1}: RESEARCHER{
                     i +
-                    1}")
+                    1}"""
+            )
             # Create plugins list for each research agent
             internal_plugins = [ModularSearchPlugin()]
             if memory_plugin:
@@ -157,21 +145,22 @@ class LeadResearcherAgent(ChatCompletionAgent):
                 logger.info(f"🔗 Added memory plugin to RESEARCHER{i + 1}")
 
             # Create instrumented service to log LLM calls
-            service = get_azure_openai_service(
-                config.get_model_config("gpt41"))
+            service = get_azure_openai_service(config.get_model_config("gpt41"))
             agent = ChatCompletionAgent(
-                name=f"RESEARCHER{
+                name=f"""RESEARCHER{
                     i +
-                    1}",
+                    1}""",
                 description="Performs comprehensive INTERNAL DOCUMENT SEARCH ONLY using Azure AI Search and returns structured JSON results from internal repositories. NO external source access.",
                 instructions=RESEARCHER_PROMPT,
                 service=service,
-                plugins=internal_plugins)
+                plugins=internal_plugins,
+            )
             research_agents.append(agent)
             logger.info(
-                f"✅ Successfully created research agent: {
+                f"""✅ Successfully created research agent: {
                     agent.name} with {
-                    len(internal_plugins)} plugins")
+                    len(internal_plugins)} plugins"""
+            )
 
         logger.info(f"🤖 Total research agents created: {len(research_agents)}")
         return research_agents
@@ -184,16 +173,19 @@ class LeadResearcherAgent(ChatCompletionAgent):
     @property
     def parallel_research_plugin(self) -> "ParallelResearchPlugin":
         """Access to parallel research plugin (robust to patching/mocking)."""
-        plugin_type = type(self).ParallelResearchPlugin if hasattr(
-            type(self), 'ParallelResearchPlugin') else ParallelResearchPlugin
-        if self.kernel and hasattr(self.kernel, 'plugins'):
+        plugin_type = (
+            type(self).ParallelResearchPlugin
+            if hasattr(type(self), "ParallelResearchPlugin")
+            else ParallelResearchPlugin
+        )
+        if self.kernel and hasattr(self.kernel, "plugins"):
             for plugin in self.kernel.plugins.values():
                 if isinstance(plugin, plugin_type):
                     return plugin
         return None
 
     @property
-    def research_agents(self) -> List[Agent]:
+    def research_agents(self) -> list[Agent]:
         """Access to internal research agents (backward compatibility)."""
         return self._research_agents
 
@@ -241,14 +233,16 @@ class LeadResearcherAgent(ChatCompletionAgent):
                 on_intermediate_message=None,  # Disable callback to avoid type errors
                 arguments=arguments,
                 kernel=kernel,
-                **kwargs
+                **kwargs,
             ):
                 yield response_item
 
         except Exception as e:
             logger.error(
-                f"❌ CRITICAL ERROR in LeadResearcherAgent.invoke_stream: {
-                    str(e)}", exc_info=True)
+                f"""❌ CRITICAL ERROR in LeadResearcherAgent.invoke_stream: {
+                    str(e)}""",
+                exc_info=True,
+            )
 
             # Return an error as streaming content
             error_content = f"Error in research execution: {str(e)}"
@@ -256,7 +250,7 @@ class LeadResearcherAgent(ChatCompletionAgent):
                 role=AuthorRole.ASSISTANT,
                 content=error_content,
                 choice_index=0,
-                name=self.name
+                name=self.name,
             )
 
             response_thread = thread if thread is not None else ChatHistoryAgentThread()

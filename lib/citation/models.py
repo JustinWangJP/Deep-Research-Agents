@@ -2,19 +2,21 @@
 Citation data models and structures.
 Defines core data classes and legacy compatibility structures.
 """
+
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
 class Citation:
     """Simple citation data structure."""
+
     id: str
     content: str
     source_title: str
-    case_number: Optional[str] = None
-    page_number: Optional[int] = None
+    case_number: str | None = None
+    page_number: int | None = None
     confidence: float = 1.0
     created_at: str = None
 
@@ -22,7 +24,7 @@ class Citation:
         if self.created_at is None:
             self.created_at = datetime.now().isoformat()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return asdict(self)
 
@@ -40,9 +42,10 @@ class Citation:
 @dataclass
 class CitationRegistry:
     """Legacy CitationRegistry for backward compatibility."""
-    citations: Dict[str, Dict[str, Any]]
-    source_mappings: Dict[str, str] = None
-    search_session_id: Optional[str] = None
+
+    citations: dict[str, dict[str, Any]]
+    source_mappings: dict[str, str] = None
+    search_session_id: str | None = None
 
     def __post_init__(self):
         if not self.citations:

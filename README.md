@@ -92,62 +92,62 @@ Deep Research Agentsは、**Microsoft Semantic Kernel**と**MagenticOrchestratio
 - **設定可能な統合**: Web検索は`project_config.yaml`で有効/無効化および設定可能
 - **品質保証**: Web検索結果は内部文書と同じ信頼性評価を受ける
 
-<details>
-<summary>
-
 ### 🎭 専門エージェント構成
 
-</summary>
-
 #### 1. **LeadResearcherAgent** 🎯 *リードリサーチャー*
-   - **役割**: 複数の内部サブResearchAgentsのマネージャーおよびコーディネーター
-   - **アーキテクチャ**: 3つ以上のサブResearchAgents（RESEARCHER1, RESEARCHER2, RESEARCHER3...）を含み、オーケストレート
-   - **特別な機能**: 複数の調査クエリの並列オーケストレーションと同時実行
-   - **実装**: `ConcurrentOrchestration`と`ParallelResearchPlugin`による内部エージェント管理
-   - **機能**:
-     - サブResearchAgents間での調査クエリの分散
-     - 複数のエージェントからの結果の集約と統合
-     - 品質管理と結果統合
-     - ワークロードに基づく動的エージェントスケーリング
-   - **メモリ**: 全サブエージェント間で共有されるSemantic Kernel Memory統合によるコンテキスト継続
+
+- **役割**: 複数の内部サブResearchAgentsのマネージャーおよびコーディネーター
+- **アーキテクチャ**: 3つ以上のサブResearchAgents（RESEARCHER1, RESEARCHER2, RESEARCHER3...）を含み、オーケストレート
+- **特別な機能**: 複数の調査クエリの並列オーケストレーションと同時実行
+- **実装**: `ConcurrentOrchestration`と`ParallelResearchPlugin`による内部エージェント管理
+- **機能**:
+  - サブResearchAgents間での調査クエリの分散
+  - 複数のエージェントからの結果の集約と統合
+  - 品質管理と結果統合
+  - ワークロードに基づく動的エージェントスケーリング
+- **メモリ**: 全サブエージェント間で共有されるSemantic Kernel Memory統合によるコンテキスト継続
 
 #### 2. **CredibilityCriticAgent** 🔍 *信頼性評価スペシャリスト*
-   - **役割**: 内部ソースの信頼性とカバレッジの科学的評価
-   - **評価基準**: ソース品質、情報の一貫性、エビデンス強度
-   - **機能**: 追加検索による補強、信頼性スコア計算
-   - **出力**: 構造化信頼性レポート + 改善推奨事項
+
+- **役割**: 内部ソースの信頼性とカバレッジの科学的評価
+- **評価基準**: ソース品質、情報の一貫性、エビデンス強度
+- **機能**: 追加検索による補強、信頼性スコア計算
+- **出力**: 構造化信頼性レポート + 改善推奨事項
 
 #### 3. **SummarizerAgent** 📋 *知識統合スペシャリスト*
-   - **役割**: 大量の内部文書の構造化要約
-   - **専門分野**: 企業テーマによる分類、優先順位付け
-   - **技術**: 階層要約、キーワード抽出、関連性分析
-   - **出力**: 構造化要約 + キーポイント抽出
+
+- **役割**: 大量の内部文書の構造化要約
+- **専門分野**: 企業テーマによる分類、優先順位付け
+- **技術**: 階層要約、キーワード抽出、関連性分析
+- **出力**: 構造化要約 + キーポイント抽出
 
 #### 4. **ReportWriterAgent** ✍️ *レポート生成スペシャリスト*
-   - **役割**: 最終レポート作成とConfidenceスコア割り当て
-   - **技術**: 構造化文書生成、引用管理、エビデンス実証
-   - **評価**: 多軸Confidence評価（ソース品質、一貫性、包括性）
-   - **出力**: 意思決定支援レポート + 信頼性指標
+
+- **役割**: 最終レポート作成とConfidenceスコア割り当て
+- **技術**: 構造化文書生成、引用管理、エビデンス実証
+- **評価**: 多軸Confidence評価（ソース品質、一貫性、包括性）
+- **出力**: 意思決定支援レポート + 信頼性指標
 
 #### 5. **ReflectionCriticAgent** 🎯 *品質保証スペシャリスト*
-   - **役割**: レポート品質とConfidence評価妥当性の検証
-   - **技術**: メタ認知評価、論理一貫性チェック、改善推奨
-   - **基準**: 企業R&D品質基準への準拠
-   - **出力**: 品質評価レポート + 改善指導
+
+- **役割**: レポート品質とConfidence評価妥当性の検証
+- **技術**: メタ認知評価、論理一貫性チェック、改善推奨
+- **基準**: 企業R&D品質基準への準拠
+- **出力**: 品質評価レポート + 改善指導
 
 #### 6. **TranslatorAgent** 🌐 *多言語スペシャリスト*
-   - **役割**: 専門用語サポート付き高精度翻訳
-   - **専門分野**: 技術文書フォーマット保持、専門用語辞書
-   - **機能**: 日英双方向翻訳、コンテキスト認識翻訳
-   - **品質**: 翻訳品質評価、用語標準化
+
+- **役割**: 専門用語サポート付き高精度翻訳
+- **専門分野**: 技術文書フォーマット保持、専門用語辞書
+- **機能**: 日英双方向翻訳、コンテキスト認識翻訳
+- **品質**: 翻訳品質評価、用語標準化
 
 #### 7. **CitationAgent** 📚 *引用管理スペシャリスト*
-   - **役割**: 内部文書引用と参考文献管理
-   - **技術**: 自動引用生成、ソーストレーサビリティ
-   - **検証**: 引用精度、ソース存在確認
-   - **出力**: 構造化引用リスト + メタデータ
 
-</details>
+- **役割**: 内部文書引用と参考文献管理
+- **技術**: 自動引用生成、ソーストレーサビリティ
+- **検証**: 引用精度、ソース存在確認
+- **出力**: 構造化引用リスト + メタデータ
 
 ## 🚀 セットアップ
 
@@ -260,9 +260,96 @@ curl http://localhost:8000/health
 ```
 
 **アクセス可能なエンドポイント：**
-- **APIドキュメント**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc  
-- **ヘルスチェック**: http://localhost:8000/health
+
+- **APIドキュメント**: <http://localhost:8000/docs>
+- **ReDoc**: <http://localhost:8000/redoc>
+- **ヘルスチェック**: <http://localhost:8000/health>
+
+### 🧹 コード品質管理
+
+#### 🔍 Lintチェックと自動修正
+
+プロジェクトは包括的なコード品質管理システムを採用しており、**lib/** と **deep-research-ui/backend/** の両方のPythonコードを対象としています。
+
+##### 🎯 利用可能なツール
+
+| ツール | 目的 | 対象ディレクトリ |
+|--------|------|------------------|
+| **black** | コードフォーマット | lib/, deep-research-ui/backend/ |
+| **isort** | インポート文の整理 | lib/, deep-research-ui/backend/ |
+| **flake8** | 静的解析 | lib/, deep-research-ui/backend/ |
+| **mypy** | 型チェック | lib/, deep-research-ui/backend/ |
+| **autoflake** | 未使用インポート削除 | lib/, deep-research-ui/backend/ |
+| **pyupgrade** | コードモダナイゼーション | lib/, deep-research-ui/backend/ |
+
+##### 🚀 実行手順
+
+###### 📋 個別ツールの実行
+
+```bash
+# 未使用インポートの自動削除
+uv run poe autoflake
+
+# Python 3.12+へのコード最適化
+uv run poe pyupgrade
+
+# コードフォーマット（120文字幅）
+uv run poe black
+
+# インポート文の自動整理
+uv run poe isort
+
+# 静的解析
+uv run flake8 lib deep-research-ui/backend
+
+# 型チェック
+uv run mypy lib deep-research-ui/backend
+```
+
+###### 🔄 一括自動修正
+
+```bash
+# すべての自動修正を順番に実行
+uv run poe lint-fix
+
+# または手動で順番に実行
+uv run poe autoflake && uv run poe pyupgrade && uv run poe black && uv run poe isort
+```
+
+###### 🪝 pre-commitフック
+
+```bash
+# 全ファイルに対してpre-commitを実行
+uv run pre-commit run --all-files
+
+# 特定のファイルのみチェック
+uv run pre-commit run black --files deep-research-ui/backend/main.py
+uv run pre-commit run isort --files lib/*.py
+```
+
+##### 📊 設定ファイル
+
+- **.flake8**: flake8設定（120文字のline-length、除外ルール）
+- **pyproject.toml**: black, isort, mypyの設定
+- **.pre-commit-config.yaml**: pre-commitフック設定
+
+##### ⚙️ カスタマイズ例
+
+```bash
+# 特定のディレクトリのみチェック
+uv run black lib/
+uv run isort deep-research-ui/backend/
+
+# 特定のファイルのみ
+uv run black deep-research-ui/backend/main.py
+uv run flake8 deep-research-ui/backend/models.py
+```
+
+##### 🎨 設定値
+
+- **line-length**: 120文字
+- **Pythonバージョン**: 3.12+
+- **除外パターン**: .git, __pycache__, .venv, build, dist など
 
 ### 🛠️ 設定詳細
 

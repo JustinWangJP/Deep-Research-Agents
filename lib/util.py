@@ -1,8 +1,8 @@
 """
 Utility functions for Deep Research Agent.
 """
+
 import logging
-from typing import Optional
 
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.contents import ChatMessageContent
@@ -14,13 +14,13 @@ def get_config():
     try:
         # Try to import from the parent config.py directly
         import os
-        import sys
+
         parent_dir = os.path.dirname(__file__)
-        config_path = os.path.join(parent_dir, 'config.py')
+        config_path = os.path.join(parent_dir, "config.py")
 
         import importlib.util
-        spec = importlib.util.spec_from_file_location(
-            "main_config", config_path)
+
+        spec = importlib.util.spec_from_file_location("main_config", config_path)
         main_config = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(main_config)
 
@@ -47,11 +47,11 @@ def dbg(msg: ChatMessageContent) -> None:
 
     # Create a hash of the content to detect duplicates more reliably
     import hashlib
+
     content_hash = hashlib.md5(content.encode()).hexdigest()
 
     # Skip if this is the same message as the last one (prevent duplicates)
-    if (_last_message["role"] == role and
-            _last_message["content_hash"] == content_hash):
+    if _last_message["role"] == role and _last_message["content_hash"] == content_hash:
         return
 
     # Update last message tracking
@@ -67,10 +67,8 @@ def dbg(msg: ChatMessageContent) -> None:
     print(f"{'=' * 60}\n")
 
 
-def get_azure_openai_service(
-        deployment_name: str,
-        max_tokens: Optional[int] = None) -> AzureChatCompletion:
-    """    Create Azure OpenAI chat completion service with improved error handling and proper context limits.
+def get_azure_openai_service(deployment_name: str, max_tokens: int | None = None) -> AzureChatCompletion:
+    """Create Azure OpenAI chat completion service with improved error handling and proper context limits.
 
     Args:
         deployment_name: Name of the Azure OpenAI deployment
@@ -88,7 +86,7 @@ def get_azure_openai_service(
         config = get_config()
 
         # Handle both old Config class and new project config
-        if hasattr(config, 'azure_openai_endpoint'):
+        if hasattr(config, "azure_openai_endpoint"):
             kwargs = {
                 "deployment_name": deployment_name,
                 "endpoint": config.azure_openai_endpoint,
@@ -97,7 +95,7 @@ def get_azure_openai_service(
             }
         else:
             # Handle new project config structure
-            azure_config = getattr(config, 'azure', None)
+            azure_config = getattr(config, "azure", None)
             if azure_config:
                 kwargs = {
                     "deployment_name": deployment_name,
@@ -132,7 +130,7 @@ def truncate_text(text: str, max_length: int = 1000) -> str:
         return ""
     if len(text) <= max_length:
         return text
-    return text[:max_length - 3] + "..."
+    return text[: max_length - 3] + "..."
 
 
 def validate_search_results(results: list) -> bool:

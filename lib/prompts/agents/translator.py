@@ -6,11 +6,12 @@ This module contains all pro**NARRATIVE WRITING REQUIREMENT**: ALL translated co
 **ARABIC NUMERALS REQUIREMENT**: Always preserve Arabic numerals (1, 2, 3, 17,439, 30%, etc.) exactly in translations. Do NOT convert to Japanese numerals (一、二、三、等) or written-out numbers.ts related to the translator agent
 that handles bilingual content translation for research reports.
 """
+
 import logging
 
 from lib.config.project_config import get_project_config
-from lib.utils.prompt_manager import PromptManager
 from lib.prompts.common import get_execution_context
+from lib.utils.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -23,25 +24,20 @@ def get_translator_prompt() -> str:
 
     # Get translator configuration
     translator_config = config.get_translator_config()
-    supported_languages = translator_config.get(
-        'supported_languages', ['ja', 'en'])
-    translation_settings = translator_config.get('translation_settings', {})
-    preserve_technical_terms = translation_settings.get(
-        'preserve_technical_terms', True)
-    maintain_document_structure = translation_settings.get(
-        'maintain_document_structure', True)
-    include_original_citations = translation_settings.get(
-        'include_original_citations', True)
+    supported_languages = translator_config.get("supported_languages", ["ja", "en"])
+    translation_settings = translator_config.get("translation_settings", {})
+    preserve_technical_terms = translation_settings.get("preserve_technical_terms", True)
+    maintain_document_structure = translation_settings.get("maintain_document_structure", True)
+    include_original_citations = translation_settings.get("include_original_citations", True)
 
-    language_names = {'ja': 'Japanese', 'en': 'English'}
+    language_names = {"ja": "Japanese", "en": "English"}
     supported_language_list = [
-        f"{code} ({
+        f"""{code} ({
             language_names.get(
                 code,
-                code)})" for code in supported_languages]
-
-
-
+                code)})"""
+        for code in supported_languages
+    ]
 
     return f"""{get_execution_context()}
 

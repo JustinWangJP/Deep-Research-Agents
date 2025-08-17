@@ -4,11 +4,12 @@ Reflection Critic Agent Prompts
 This module contains all prompts related to the reflection critic agent
 that evaluates report quality and provides improvement feedback.
 """
+
 import logging
 
 from lib.config.project_config import get_project_config
-from lib.utils.prompt_manager import PromptManager
 from lib.prompts.common import get_execution_context
+from lib.utils.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -17,20 +18,18 @@ def get_reflection_critic_prompt() -> str:
     """Generate dynamic reflection critic prompt from configuration."""
     config = get_project_config()
     prompt_manager = PromptManager(config)
-    company_context = prompt_manager.get_company_context()
+    prompt_manager.get_company_context()
 
     # Get reflection criteria from configuration
-    reflection_criteria = config.get_reflection_criteria()
+    config.get_reflection_criteria()
 
     # Get report writer configuration
-    report_sections = config.get_report_writer_sections()
-    quality_requirements = config.report_quality if hasattr(
-        config, 'report_quality') else {}
+    config.get_report_writer_sections()
+    config.report_quality if hasattr(config, "report_quality") else {}
 
     # Get quality threshold
     quality_thresholds = config.get_researcher_quality_thresholds()
-    quality_threshold = quality_thresholds.get('quality_threshold', 0.80)
-
+    quality_threshold = quality_thresholds.get("quality_threshold", 0.80)
 
     return f"""{get_execution_context()}
 
@@ -130,6 +129,7 @@ Senior editor evaluating reports for quality, accuracy, completeness, and narrat
 ```
 **APPROVAL CRITERIA**: Quality ≥{quality_threshold} AND narrative prose throughout AND complete citations AND background context provided AND confidence assessments included
 **FEEDBACK PRIORITY**: 1) Confidence assessment quality, 2) Narrative writing standards, 3) Background context explanations, 4) Citations/references, 5) URL/filename preservation, 6) Technical accuracy"""
+
 
 # Backward compatibility - expose the prompt as a constant
 REFLECTION_CRITIC_PROMPT = get_reflection_critic_prompt()

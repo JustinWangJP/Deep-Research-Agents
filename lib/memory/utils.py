@@ -2,6 +2,7 @@
 Memory utilities for Azure OpenAI integration.
 Provides factory functions and common utilities for memory operations.
 """
+
 import logging
 
 from openai import AsyncAzureOpenAI
@@ -15,7 +16,7 @@ def create_azure_openai_text_embedding(
     endpoint: str,
     api_version: str,
     deployment_name: str,
-    service_id: str = "azure_embedding"
+    service_id: str = "azure_embedding",
 ) -> OpenAITextEmbedding:
     """
     Create OpenAI Text Embedding for Azure OpenAI.
@@ -33,20 +34,13 @@ def create_azure_openai_text_embedding(
     logger.debug(f"Creating Azure OpenAI text embedding service: {service_id}")
     logger.debug(f"Deployment: {deployment_name}, Endpoint: {endpoint}")
 
-    azure_client = AsyncAzureOpenAI(
-        api_key=api_key,
-        azure_endpoint=endpoint,
-        api_version=api_version
-    )
+    azure_client = AsyncAzureOpenAI(api_key=api_key, azure_endpoint=endpoint, api_version=api_version)
 
     embedding_service = OpenAITextEmbedding(
-        ai_model_id=deployment_name,
-        async_client=azure_client,
-        service_id=service_id
+        ai_model_id=deployment_name, async_client=azure_client, service_id=service_id
     )
 
-    logger.info(
-        f"Successfully created Azure OpenAI embedding service: {service_id}")
+    logger.info(f"Successfully created Azure OpenAI embedding service: {service_id}")
     return embedding_service
 
 
@@ -81,7 +75,7 @@ def create_memory_metadata(
     entry_type: str,
     session_id: str,
     project_id: str,
-    additional_data: dict = None
+    additional_data: dict = None,
 ) -> dict:
     """
     Create standardized metadata for memory entries.
@@ -103,7 +97,7 @@ def create_memory_metadata(
         "type": entry_type,
         "created": datetime.now().isoformat(),
         "session_id": session_id,
-        "project_id": project_id
+        "project_id": project_id,
     }
 
     if additional_data:

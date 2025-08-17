@@ -1,6 +1,7 @@
 """
 Configuration management for Deep Research Agent.
 """
+
 import logging
 import os
 import sys
@@ -16,6 +17,7 @@ except ImportError:
     # Fallback for when project_config is not available
     def get_project_config():
         return None
+
     ProjectConfig = None
 
 # Load environment variables
@@ -24,11 +26,11 @@ load_dotenv()
 # Configure logging with UTF-8 encoding support
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler('deep_research_agent.log', encoding='utf-8'),
-        logging.StreamHandler()
-    ]
+        logging.FileHandler("deep_research_agent.log", encoding="utf-8"),
+        logging.StreamHandler(),
+    ],
 )
 
 logger = logging.getLogger(__name__)
@@ -36,7 +38,6 @@ logger = logging.getLogger(__name__)
 
 class ConfigError(Exception):
     """Configuration error exception."""
-    pass
 
 
 class Config:
@@ -54,19 +55,14 @@ class Config:
         # Azure OpenAI Configuration
         self.azure_openai_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT", "")
         self.azure_openai_api_key = os.getenv("AZURE_OPENAI_API_KEY", "")
-        self.azure_openai_api_version = os.getenv(
-            "AZURE_OPENAI_API_VERSION", "2024-02-01")
+        self.azure_openai_api_version = os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-01")
 
         # Azure OpenAI Deployment Names
-        self.azure_gpt41_deployment = os.getenv(
-            "AZURE_GPT41_DEPLOYMENT", "gpt-41")
-        self.azure_gpt41_mini_deployment = os.getenv(
-            "AZURE_GPT41_MINI_DEPLOYMENT", "gpt-41-mini")
+        self.azure_gpt41_deployment = os.getenv("AZURE_GPT41_DEPLOYMENT", "gpt-41")
+        self.azure_gpt41_mini_deployment = os.getenv("AZURE_GPT41_MINI_DEPLOYMENT", "gpt-41-mini")
         self.azure_o3_deployment = os.getenv("AZURE_O3_DEPLOYMENT", "o3")
-        self.azure_embedding_deployment = os.getenv(
-            "AZURE_EMBEDDING_DEPLOYMENT", "text-embedding-3-small")
-        self.azure_openai_embedding_deployment = os.getenv(
-            "AZURE_EMBEDDING_DEPLOYMENT", "text-embedding-3-small")
+        self.azure_embedding_deployment = os.getenv("AZURE_EMBEDDING_DEPLOYMENT", "text-embedding-3-small")
+        self.azure_openai_embedding_deployment = os.getenv("AZURE_EMBEDDING_DEPLOYMENT", "text-embedding-3-small")
 
         # Azure AI Search Configuration
         self.azure_search_endpoint = os.getenv("AZURE_SEARCH_ENDPOINT", "")
@@ -77,40 +73,29 @@ class Config:
         self.tavily_api_key = os.getenv("TAVILY_API_KEY", "")
         self.tavily_max_results = int(os.getenv("TAVILY_MAX_RESULTS", "10"))
         self.tavily_max_retries = int(os.getenv("TAVILY_MAX_RETRIES", "3"))
-        self.tavily_timeout = int(
-            os.getenv(
-                "TAVILY_TIMEOUT",
-                "30"))  # Timeout in seconds
+        self.tavily_timeout = int(os.getenv("TAVILY_TIMEOUT", "30"))  # Timeout in seconds
 
         # Document type indexes - only abstract reference
         self.document_indexes = {}
         if self.project_config:
-            self.document_indexes = {
-                dt.name: dt.index_name for dt in self.project_config.document_types}
+            self.document_indexes = {dt.name: dt.index_name for dt in self.project_config.document_types}
 
         # Quality Thresholds - with project config integration
         if self.project_config:
-            self.coverage_threshold = self.project_config.quality_thresholds.get(
-                "coverage_threshold", 0.75)
-            self.quality_threshold = self.project_config.quality_thresholds.get(
-                "quality_threshold", 0.80)
-            self.max_quality_iterations = self.project_config.quality_thresholds.get(
-                "max_quality_iterations", 3)
+            self.coverage_threshold = self.project_config.quality_thresholds.get("coverage_threshold", 0.75)
+            self.quality_threshold = self.project_config.quality_thresholds.get("quality_threshold", 0.80)
+            self.max_quality_iterations = self.project_config.quality_thresholds.get("max_quality_iterations", 3)
         else:
-            self.coverage_threshold = float(
-                os.getenv("COVERAGE_THRESHOLD", "0.75"))
-            self.quality_threshold = float(
-                os.getenv("QUALITY_THRESHOLD", "0.80"))
-            self.max_quality_iterations = int(
-                os.getenv("MAX_QUALITY_ITERATIONS", "3"))
+            self.coverage_threshold = float(os.getenv("COVERAGE_THRESHOLD", "0.75"))
+            self.quality_threshold = float(os.getenv("QUALITY_THRESHOLD", "0.80"))
+            self.max_quality_iterations = int(os.getenv("MAX_QUALITY_ITERATIONS", "3"))
 
         # Logging Configuration
         self.log_level = os.getenv("LOG_LEVEL", "INFO").upper()
         self.debug_mode = os.getenv("DEBUG_MODE", "false").lower() == "true"
 
         # Token limits
-        self.max_completion_tokens = int(
-            os.getenv("MAX_COMPLETION_TOKENS", "65536"))
+        self.max_completion_tokens = int(os.getenv("MAX_COMPLETION_TOKENS", "65536"))
 
         # Initialize logging
         self.setup_logging_level()
@@ -145,14 +130,13 @@ class Config:
             ("AZURE_SEARCH_API_KEY", self.azure_search_api_key),
         ]
 
-        missing_configs = [
-            name for name, value in required_configs if not value
-        ]
+        missing_configs = [name for name, value in required_configs if not value]
 
         if missing_configs:
             raise ConfigError(
-                f"Missing required environment variables: {
-                    ', '.join(missing_configs)}")
+                f"""Missing required environment variables: {
+                    ', '.join(missing_configs)}"""
+            )
 
         # Validate numeric values
         try:
@@ -167,8 +151,7 @@ class Config:
 
         # Warn if optional Tavily API key is missing
         if not self.tavily_api_key:
-            logger.warning(
-                "Tavily API key not configured - web search functionality will be disabled")
+            logger.warning("Tavily API key not configured - web search functionality will be disabled")
 
         logger.info("Configuration validation successful")
 
@@ -194,7 +177,7 @@ class Config:
             "INFO": logging.INFO,
             "WARNING": logging.WARNING,
             "ERROR": logging.ERROR,
-            "CRITICAL": logging.CRITICAL
+            "CRITICAL": logging.CRITICAL,
         }
 
         level = level_map.get(self.log_level, logging.INFO)
@@ -206,11 +189,9 @@ class Config:
         if self.debug_mode or self.log_level == "DEBUG":
             # Enable debug for all components when in debug mode
             logging.getLogger("kernel").setLevel(logging.DEBUG)
-            logging.getLogger(
-                "in_process_runtime.events").setLevel(logging.DEBUG)
+            logging.getLogger("in_process_runtime.events").setLevel(logging.DEBUG)
             logging.getLogger("in_process_runtime").setLevel(logging.DEBUG)
-            logging.getLogger("httpx").setLevel(
-                logging.INFO)  # Still limit httpx noise
+            logging.getLogger("httpx").setLevel(logging.INFO)  # Still limit httpx noise
             logging.getLogger("semantic_kernel").setLevel(logging.DEBUG)
             logging.getLogger("lib.sk_memory_plugin").setLevel(logging.DEBUG)
             logging.getLogger("lib.agent_factory").setLevel(logging.DEBUG)
@@ -218,8 +199,7 @@ class Config:
         else:
             # Standard logging levels for production
             logging.getLogger("kernel").setLevel(logging.INFO)
-            logging.getLogger("in_process_runtime.events").setLevel(
-                logging.WARNING)
+            logging.getLogger("in_process_runtime.events").setLevel(logging.WARNING)
             logging.getLogger("in_process_runtime").setLevel(logging.WARNING)
             logging.getLogger("httpx").setLevel(logging.WARNING)
             logging.getLogger("semantic_kernel").setLevel(logging.WARNING)
@@ -259,8 +239,7 @@ def get_config() -> Config:
         except ConfigError as e:
             logger.error(f"Configuration validation failed: {e}")
             # Don't raise in get_config to allow partial functionality
-            logger.warning(
-                "Proceeding with partial configuration - some features may not work")
+            logger.warning("Proceeding with partial configuration - some features may not work")
     return _config
 
 

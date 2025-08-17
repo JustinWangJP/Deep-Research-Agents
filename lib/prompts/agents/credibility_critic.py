@@ -4,11 +4,12 @@ Credibility Critic Agent Prompts
 This module contains all prompts related to the credibility critic agent
 that handles source validation and verification.
 """
+
 import logging
 
 from lib.config.project_config import get_project_config
-from lib.utils.prompt_manager import PromptManager
 from lib.prompts.common import get_execution_context
+from lib.utils.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -21,29 +22,27 @@ def get_credibility_critic_prompt() -> str:
 
     # Get credibility assessment configuration
     credibility_config = config.get_credibility_assessment_config()
-    score_ranges = credibility_config.get('score_ranges', {})
-    evaluation_criteria = credibility_config.get('evaluation_criteria', {})
-    quality_indicators = credibility_config.get('quality_indicators', [])
+    score_ranges = credibility_config.get("score_ranges", {})
+    evaluation_criteria = credibility_config.get("evaluation_criteria", {})
+    credibility_config.get("quality_indicators", [])
 
     # Get quality thresholds
     quality_thresholds = config.get_researcher_quality_thresholds()
-    coverage_threshold = quality_thresholds.get('coverage_threshold', 0.75)
+    coverage_threshold = quality_thresholds.get("coverage_threshold", 0.75)
 
     # Generate search functions section
     search_functions = prompt_manager.get_search_functions_section()
 
-    high_range = score_ranges.get('high', '8.0-10.0')
-    medium_range = score_ranges.get('medium', '5.0-7.9')
-    low_range = score_ranges.get('low', '1.0-4.9')
+    high_range = score_ranges.get("high", "8.0-10.0")
+    medium_range = score_ranges.get("medium", "5.0-7.9")
+    low_range = score_ranges.get("low", "1.0-4.9")
 
     source_reliability = evaluation_criteria.get(
-        'source_reliability',
-        'Research Institute findings, validated reports, regulatory submissions')
-    data_quality = evaluation_criteria.get(
-        'data_quality', 'Data quality standards alignment and process validation')
-    regulatory_compliance = evaluation_criteria.get(
-        'regulatory_compliance', 'Compliance documentation verification')
-
+        "source_reliability",
+        "Research Institute findings, validated reports, regulatory submissions",
+    )
+    data_quality = evaluation_criteria.get("data_quality", "Data quality standards alignment and process validation")
+    regulatory_compliance = evaluation_criteria.get("regulatory_compliance", "Compliance documentation verification")
 
     return f"""{get_execution_context()}
 

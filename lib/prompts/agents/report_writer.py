@@ -7,8 +7,8 @@ that handles comprehensive report generation with proper citations.
 import logging
 
 from lib.config.project_config import get_project_config
-from lib.utils.prompt_manager import PromptManager
 from lib.prompts.common import get_execution_context
+from lib.utils.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -21,20 +21,16 @@ def get_report_writer_prompt() -> str:
 
     # Get report writer configuration
     report_writer_config = config.get_report_writer_config()
-    quality_requirements = report_writer_config.get('quality_requirements', {})
-    sections = report_writer_config.get('sections', {})
-    required_sections = sections.get('required', [])
-    optional_sections = sections.get('optional', [])
+    quality_requirements = report_writer_config.get("quality_requirements", {})
+    sections = report_writer_config.get("sections", {})
+    required_sections = sections.get("required", [])
+    optional_sections = sections.get("optional", [])
 
     # Get citation configuration
     citation_config = config.get_citation_config()
-    citation_processing = citation_config.get('processing', {})
-    reference_title = citation_processing.get('reference_section_title', {})
-    reference_title_ja = reference_title.get('ja', '参考文献・引用元')  # Remove internal-only restriction
-
-
-
-
+    citation_processing = citation_config.get("processing", {})
+    reference_title = citation_processing.get("reference_section_title", {})
+    reference_title_ja = reference_title.get("ja", "参考文献・引用元")  # Remove internal-only restriction
 
     return f"""{get_execution_context()}
 

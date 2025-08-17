@@ -1,3 +1,19 @@
 {
-    "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.linting.mypyEnabled": true,
+  "python.linting.lintOnSave": true,
+  "python.formatting.blackArgs": ["--line-length=120"],
+  "python.linting.flake8Args": ["--max-line-length=120", "--extend-ignore=E203,E501,W503,E122"],
+  "python.linting.mypyArgs": ["--python-version=3.12", "--warn-untyped-defs"],
+  "files.associations": {
+    "*.py": "python"
+  }
 }

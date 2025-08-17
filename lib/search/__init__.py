@@ -24,29 +24,33 @@ Usage:
     provider = AzureSearchProvider(config)
 """
 
-from .base import (DocumentType, EmbeddingProvider, SearchMode, SearchProvider,
-                   SearchQuery, SearchResult, SearchStatistics)
+from .base import (
+    DocumentType,
+    EmbeddingProvider,
+    SearchMode,
+    SearchProvider,
+    SearchQuery,
+    SearchResult,
+    SearchStatistics,
+)
 from .manager import SearchManager
 from .plugin import ModularSearchPlugin
-from .providers import (AzureEmbeddingProvider, AzureSearchProvider,
-                        WebSearchProvider)
+from .providers import AzureEmbeddingProvider, AzureSearchProvider, WebSearchProvider
 
 __all__ = [
     # Base classes and models
-    'SearchProvider',
-    'EmbeddingProvider',
-    'SearchQuery',
-    'SearchResult',
-    'SearchStatistics',
-    'DocumentType',
-    'SearchMode',
-
+    "SearchProvider",
+    "EmbeddingProvider",
+    "SearchQuery",
+    "SearchResult",
+    "SearchStatistics",
+    "DocumentType",
+    "SearchMode",
     # Main components
-    'SearchManager',
-    'ModularSearchPlugin',
-
+    "SearchManager",
+    "ModularSearchPlugin",
     # Providers
-    'AzureSearchProvider',
-    'AzureEmbeddingProvider',
-    'WebSearchProvider'
+    "AzureSearchProvider",
+    "AzureEmbeddingProvider",
+    "WebSearchProvider",
 ]

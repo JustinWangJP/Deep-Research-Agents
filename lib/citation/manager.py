@@ -2,9 +2,10 @@
 Citation Manager - Core business logic for citation operations.
 Handles CRUD operations, batch processing, and import/export functionality.
 """
+
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from .formatters import CitationFormatter
 from .models import Citation
@@ -21,16 +22,16 @@ class CitationManager:
 
     def __init__(self):
         """Initialize with empty citation dictionary."""
-        self.citations: Dict[str, Citation] = {}
+        self.citations: dict[str, Citation] = {}
         self._next_id = 1
 
     def create_citation(
         self,
         content: str,
         source_title: str,
-        case_number: Optional[str] = None,
-        page_number: Optional[int] = None,
-        confidence: float = 1.0
+        case_number: str | None = None,
+        page_number: int | None = None,
+        confidence: float = 1.0,
     ) -> str:
         """
         Create a new citation.
@@ -54,16 +55,17 @@ class CitationManager:
             source_title=source_title,
             case_number=case_number,
             page_number=page_number,
-            confidence=confidence
+            confidence=confidence,
         )
 
         self.citations[citation_id] = citation
-        logger.info(f"Created citation {citation_id}: '{
-                    source_title}' (confidence: {confidence:.2f})")
+        logger.info(
+            f"""Created citation {citation_id}: '{
+                    source_title}' (confidence: {confidence:.2f})"""
+        )
         return citation_id
 
-    def create_multiple_citations(
-            self, citations_data: List[Dict[str, Any]]) -> List[str]:
+    def create_multiple_citations(self, citations_data: list[dict[str, Any]]) -> list[str]:
         """
         Create multiple citations at once.
 
@@ -75,8 +77,9 @@ class CitationManager:
         """
         logger.info(f"=== Creating Multiple Citations ===")
         logger.info(
-            f"Starting batch creation of {
-                len(citations_data)} citations")
+            f"""Starting batch creation of {
+                len(citations_data)} citations"""
+        )
 
         created_ids = []
         successful_count = 0
@@ -85,11 +88,11 @@ class CitationManager:
         for i, citation_data in enumerate(citations_data, 1):
             try:
                 # Validate citation data
-                validation_errors = CitationValidator.validate_citation_data(
-                    citation_data)
+                validation_errors = CitationValidator.validate_citation_data(citation_data)
                 if validation_errors:
                     logger.warning(
-                        f"[{i}/{len(citations_data)}] Skipped citation - validation errors: {validation_errors}")
+                        f"[{i}/{len(citations_data)}] Skipped citation - validation errors: {validation_errors}"
+                    )
                     failed_count += 1
                     continue
 
@@ -104,16 +107,14 @@ class CitationManager:
                     source_title=source_title,
                     case_number=case_number,
                     page_number=page_number,
-                    confidence=float(confidence) if confidence else 1.0
+                    confidence=float(confidence) if confidence else 1.0,
                 )
                 created_ids.append(citation_id)
                 successful_count += 1
-                logger.debug(
-                    f"[{i}/{len(citations_data)}] Created citation {citation_id}")
+                logger.debug(f"[{i}/{len(citations_data)}] Created citation {citation_id}")
 
             except Exception as e:
-                logger.error(
-                    f"[{i}/{len(citations_data)}] Failed to create citation: {e}")
+                logger.error(f"[{i}/{len(citations_data)}] Failed to create citation: {e}")
                 failed_count += 1
 
         # Log summary
@@ -125,10 +126,8 @@ class CitationManager:
         return created_ids
 
     def create_citations_from_search_batch(
-        self,
-        search_results_list: List[Dict[str, Any]],
-        batch_name: str = "batch"
-    ) -> List[str]:
+        self, search_results_list: list[dict[str, Any]], batch_name: str = "batch"
+    ) -> list[str]:
         """
         Create citations from a batch of INTERNAL search results only.
 
@@ -139,11 +138,11 @@ class CitationManager:
         Returns:
             List[str]: List of created citation IDs (internal sources only)
         """
+        logger.info(f"=== Creating Citations from INTERNAL Search Batch: {batch_name} ===")
         logger.info(
-            f"=== Creating Citations from INTERNAL Search Batch: {batch_name} ===")
-        logger.info(
-            f"Processing {
-                len(search_results_list)} search results (validating internal sources)")
+            f"""Processing {
+                len(search_results_list)} search results (validating internal sources)"""
+        )
 
         citations_data = []
         valid_count = 0
@@ -151,40 +150,41 @@ class CitationManager:
         for i, result in enumerate(search_results_list, 1):
             # STRICT VALIDATION: Only process internal AI Search results
             if not CitationValidator.is_valid_internal_source(result):
-                logger.warning(
-                    f"[{i}/{len(search_results_list)}] Skipped external/invalid source in batch")
+                logger.warning(f"[{i}/{len(search_results_list)}] Skipped external/invalid source in batch")
                 continue
 
-            content = CitationFormatter.extract_content_from_search_result(
-                result)
+            content = CitationFormatter.extract_content_from_search_result(result)
             source_title = CitationFormatter.extract_proper_filename(result)
-            case_number = result.get("text_document_id") or result.get(
-                "record_id") or result.get("id")
+            case_number = result.get("text_document_id") or result.get("record_id") or result.get("id")
             page_number = result.get("page_number")
             confidence = result.get("score", 1.0)
 
             if content and source_title:
-                citations_data.append({
-                    "content": content,
-                    "source_title": source_title,
-                    "case_number": str(case_number) if case_number else None,
-                    "page_number": page_number,
-                    "confidence": float(confidence) if confidence else 1.0
-                })
+                citations_data.append(
+                    {
+                        "content": content,
+                        "source_title": source_title,
+                        "case_number": str(case_number) if case_number else None,
+                        "page_number": page_number,
+                        "confidence": float(confidence) if confidence else 1.0,
+                    }
+                )
                 valid_count += 1
 
         logger.info(
-            f"Validated {valid_count} INTERNAL sources from {
-                len(search_results_list)} results")
+            f"""Validated {valid_count} INTERNAL sources from {
+                len(search_results_list)} results"""
+        )
 
         created_ids = self.create_multiple_citations(citations_data)
         logger.info(
-            f"Created {
-                len(created_ids)} citations from INTERNAL batch '{batch_name}'")
+            f"""Created {
+                len(created_ids)} citations from INTERNAL batch '{batch_name}'"""
+        )
         logger.info("All citations strictly from internal AI Search sources")
         return created_ids
 
-    def read_citation(self, citation_id: str) -> Optional[Citation]:
+    def read_citation(self, citation_id: str) -> Citation | None:
         """Read a citation by ID."""
         return self.citations.get(citation_id)
 
@@ -209,49 +209,41 @@ class CitationManager:
             return True
         return False
 
-    def list_citations(
-            self,
-            case_number_filter: Optional[str] = None) -> List[Citation]:
+    def list_citations(self, case_number_filter: str | None = None) -> list[Citation]:
         """List all citations with optional filtering."""
         citations = list(self.citations.values())
 
         if case_number_filter:
-            citations = [
-                c for c in citations
-                if c.case_number and case_number_filter in c.case_number
-            ]
+            citations = [c for c in citations if c.case_number and case_number_filter in c.case_number]
 
         return citations
 
-    def import_from_search_results(
-            self, search_results: Union[str, List[Dict[str, Any]]]) -> int:
+    def import_from_search_results(self, search_results: str | list[dict[str, Any]]) -> int:
         """Import citations from INTERNAL AI Search results ONLY."""
         logger.info("=== Citation Import Starting ===")
-        logger.info(
-            "Starting citation import from INTERNAL search results only")
+        logger.info("Starting citation import from INTERNAL search results only")
 
         try:
             # Handle both string (JSON) and list inputs
             results = search_results
 
             logger.info(
-                f"Processing {
-                    len(results)} search results for citation import")
+                f"""Processing {
+                    len(results)} search results for citation import"""
+            )
             imported_count = 0
 
             for i, result in enumerate(results, 1):
                 # STRICT VALIDATION: Only process internal AI Search results
                 if not CitationValidator.is_valid_internal_source(result):
                     logger.warning(
-                        f"[{i}/{len(results)}] Skipped external/invalid source: {result.get('source', 'unknown')}")
+                        f"[{i}/{len(results)}] Skipped external/invalid source: {result.get('source', 'unknown')}"
+                    )
                     continue
 
-                content = CitationFormatter.extract_content_from_search_result(
-                    result)
-                source_title = CitationFormatter.extract_proper_filename(
-                    result)
-                case_number = result.get("text_document_id") or result.get(
-                    "record_id") or result.get("id")
+                content = CitationFormatter.extract_content_from_search_result(result)
+                source_title = CitationFormatter.extract_proper_filename(result)
+                case_number = result.get("text_document_id") or result.get("record_id") or result.get("id")
                 page_number = result.get("page_number")
                 confidence = result.get("score", 1.0)
 
@@ -261,24 +253,26 @@ class CitationManager:
                         source_title=source_title,
                         case_number=str(case_number) if case_number else None,
                         page_number=page_number,
-                        confidence=float(confidence) if confidence else 1.0
+                        confidence=float(confidence) if confidence else 1.0,
                     )
-                    logger.info(f"[{i}/{len(results)}] Created citation {
-                                citation_id} from INTERNAL source: {source_title}")
+                    logger.info(
+                        f"""[{i}/{len(results)}] Created citation {
+                                citation_id} from INTERNAL source: {source_title}"""
+                    )
                     imported_count += 1
                 else:
-                    logger.warning(
-                        f"[{i}/{len(results)}] Skipped result - missing content or source title")
+                    logger.warning(f"[{i}/{len(results)}] Skipped result - missing content or source title")
 
             # Calculate and log summary statistics
-            avg_confidence = sum(c.confidence for c in self.citations.values(
-            )) / len(self.citations) if self.citations else 0
+            avg_confidence = (
+                sum(c.confidence for c in self.citations.values()) / len(self.citations) if self.citations else 0
+            )
             logger.info(f"=== Citation Import Summary ===")
             logger.info(
-                f"Imported {imported_count} citations from {
-                    len(results)} search results")
-            logger.info(
-                f"All citations are from INTERNAL AI Search sources only")
+                f"""Imported {imported_count} citations from {
+                    len(results)} search results"""
+            )
+            logger.info(f"All citations are from INTERNAL AI Search sources only")
             logger.info(f"Average confidence score: {avg_confidence:.2f}")
             logger.info(f"Total citations in registry: {len(self.citations)}")
 
@@ -288,17 +282,15 @@ class CitationManager:
             logger.error(f"Failed to import search results: {e}")
             return 0
 
-    def export_to_dict(self) -> Dict[str, Any]:
+    def export_to_dict(self) -> dict[str, Any]:
         """Export all citations to dictionary."""
         return {
-            "citations": {
-                cid: citation.to_dict() for cid,
-                citation in self.citations.items()},
-            "count": len(
-                self.citations),
-            "exported_at": datetime.now().isoformat()}
+            "citations": {cid: citation.to_dict() for cid, citation in self.citations.items()},
+            "count": len(self.citations),
+            "exported_at": datetime.now().isoformat(),
+        }
 
-    def import_from_dict(self, data: Dict[str, Any]) -> int:
+    def import_from_dict(self, data: dict[str, Any]) -> int:
         """Import citations from dictionary."""
         try:
             citations_data = data.get("citations", {})
@@ -335,26 +327,25 @@ class CitationManager:
     def process_citations(
         self,
         report_text: str,
-        search_results: Optional[Union[str, List[Dict[str, Any]]]] = None
+        search_results: str | list[dict[str, Any]] | None = None,
     ) -> str:
         """Process citations for a complete report."""
         # Import search results if provided (with strict internal validation)
         if search_results:
             count = self.import_from_search_results(search_results)
-            logger.info(
-                f"Imported {count} new INTERNAL sources for citation processing")
+            logger.info(f"Imported {count} new INTERNAL sources for citation processing")
 
-        return CitationFormatter.process_report_citations(
-            report_text, self.citations)
+        return CitationFormatter.process_report_citations(report_text, self.citations)
 
-    def validate_citations(self) -> List[str]:
+    def validate_citations(self) -> list[str]:
         """Validate all citations and return any validation errors."""
         errors = []
         for citation_id, citation in self.citations.items():
             if citation.confidence < 0.0 or citation.confidence > 1.0:
                 errors.append(
-                    f"Citation {citation_id} has invalid confidence score: {
-                        citation.confidence}")
+                    f"""Citation {citation_id} has invalid confidence score: {
+                        citation.confidence}"""
+                )
 
         return errors
 

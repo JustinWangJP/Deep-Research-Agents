@@ -3,22 +3,21 @@ FastAPIバックエンドのAPIエンドポイントテスト
 エンドツーエンドのAPIテストとモックを使用した単体テスト
 """
 
-import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import Mock, patch
-from datetime import datetime, timezone
+import os
 
 # インポートの問題を回避するためのモック設定
 import sys
-import os
+from datetime import datetime, timezone
+from unittest.mock import Mock, patch
+
+import pytest
+from fastapi.testclient import TestClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(
-    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 
 from main import app
-from models import AgentStatus, SearchProvider, TemperatureLevel
 
 
 class TestHealthEndpoints:
@@ -266,9 +265,7 @@ class TestSearchEndpoints:
         """検索プロバイダーの取得テスト"""
         with TestClient(app) as client:
             mock_search_manager = Mock()
-            mock_search_manager.get_available_providers = Mock(
-                return_value=["azure", "tavily"]
-            )
+            mock_search_manager.get_available_providers = Mock(return_value=["azure", "tavily"])
 
             with patch("main.search_manager", mock_search_manager):
                 response = client.get("/api/v1/search/providers")
@@ -329,9 +326,7 @@ class TestMemoryEndpoints:
         with TestClient(app) as client:
             mock_memory_manager = Mock()
             mock_memory_manager.store_memory = Mock(return_value="mem-123")
-            mock_memory_manager.search_memory = Mock(
-                return_value=["stored memory content"]
-            )
+            mock_memory_manager.search_memory = Mock(return_value=["stored memory content"])
 
             with patch("main.memory_manager", mock_memory_manager):
                 memory_request = {
@@ -376,9 +371,7 @@ class TestMemoryEndpoints:
         """メモリ検索テスト"""
         with TestClient(app) as client:
             mock_memory_manager = Mock()
-            mock_memory_manager.search_memory = Mock(
-                return_value=["memory1", "memory2"]
-            )
+            mock_memory_manager.search_memory = Mock(return_value=["memory1", "memory2"])
 
             with patch("main.memory_manager", mock_memory_manager):
                 response = client.get("/api/v1/memory?query=test&page=1&page_size=10")
@@ -601,10 +594,7 @@ class TestResearchEndpoints:
             response = client.get("/api/v1/research/test-task-id")
 
             assert response.status_code == 501
-            assert (
-                "Research task management not yet implemented"
-                in response.json()["detail"]
-            )
+            assert "Research task management not yet implemented" in response.json()["detail"]
 
 
 class TestConfigEndpoints:

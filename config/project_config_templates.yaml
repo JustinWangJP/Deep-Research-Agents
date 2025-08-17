@@ -18,7 +18,7 @@ data_sources:
     fallback_enabled: true               # Enable web search as fallback when other sources fail
     max_results: 10                      # Maximum number of results from web search
     timeout: 30                          # Timeout in seconds for web search requests
-    
+
   document_types:
     # Required for search functionality - minimal configuration
     category_a_documents:
@@ -35,7 +35,7 @@ data_sources:
         - "details"
         - "summary"
         - "analysis_details"
-    
+
     category_b_documents:
       func_description: "カテゴリーBのドキュメントを検索します。XXXに関する情報を取得できます。"
       index_name: "search-index-source-2"                           # Azure AI Search index name
@@ -50,7 +50,7 @@ data_sources:
         - "details"
         - "summary"
         - "analysis_details"
-    
+
     category_c_documents:
       func_description: "カテゴリーCのドキュメントを検索します。XXXに関する情報を取得できます。"
       index_name: "search-index-source-3"                                # Azure AI Search index name
@@ -63,7 +63,7 @@ data_sources:
         - "chunk"
         - "content"
         - "text"
-    
+
     category_d_documents:
       func_description: "カテゴリーDのドキュメントを検索します。XXXに関する情報を取得できます。"
       index_name: "search-index-source-4"                         # Azure AI Search index name

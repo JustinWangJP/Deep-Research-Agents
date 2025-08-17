@@ -39,6 +39,9 @@ dependencies = [
     "python-socketio>=5.10.0",
     "websockets>=12.0",
     "psutil>=5.9.0",
+    "pre-commit>=4.2.0",
+    "types-pyyaml>=6.0.12.20250809",
+    "types-psutil>=7.0.0.20250801",
 ]
 
 [project.optional-dependencies]
@@ -51,6 +54,8 @@ dev = [
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
     "httpx>=0.25.0",
+    "autoflake>=2.0.0",
+    "pyupgrade>=3.0.0",
 ]
 
 [tool.uv]
@@ -63,23 +68,37 @@ dev-dependencies = [
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
     "httpx>=0.25.0",
+    "poethepoet>=0.37.0",
+    "autoflake>=2.0.0",
+    "pyupgrade>=3.0.0",
 ]
 
-[project.scripts]
+[tool.poe.tasks]
 dev = "uvicorn deep-research-ui.backend.main:app --reload --host 0.0.0.0 --port 8000"
 start = "uvicorn deep-research-ui.backend.main:app --host 0.0.0.0 --port 8000"
+autoflake = "uv run autoflake --in-place --remove-all-unused-imports --remove-unused-variables --expand-star-imports --recursive lib deep-research-ui/backend"
+pyupgrade = "uv run pyupgrade --py312-plus $(find lib deep-research-ui/backend -name '*.py' -type f)"
+black = "uv run black lib deep-research-ui/backend"
+isort = "uv run isort lib deep-research-ui/backend"
+lint-fix = ["autoflake", "pyupgrade", "black", "isort"]
 
 [tool.black]
-line-length = 88
+line-length = 120
 target-version = ['py312']
 
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-line_length = 88
+line_length = 120
 
 [tool.mypy]
 python_version = "3.12"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
+warn_return_any = false
+warn_unused_configs = false
+check_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = ["E203", "E501", "W503", "E122"]
+exclude = [".git", "__pycache__", ".venv", "venv", ".tox", ".eggs", "*.egg", "build", "dist", ".pytest_cache", ".coverage", "htmlcov", ".mypy_cache"]

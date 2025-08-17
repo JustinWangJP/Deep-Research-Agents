@@ -4,11 +4,12 @@ Summarizer Agent Prompts
 This module contains all prompts related to the summarizer agent
 that handles large-scale data synthesis and analysis.
 """
+
 import logging
 
 from lib.config.project_config import get_project_config
-from lib.utils.prompt_manager import PromptManager
 from lib.prompts.common import get_execution_context
+from lib.utils.prompt_manager import PromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -21,19 +22,17 @@ def get_summarizer_prompt() -> str:
 
     # Get summarizer configuration
     summarizer_config = config.get_summarizer_config()
-    summarization_settings = summarizer_config.get(
-        'summarization_settings', {})
-    max_summary_length = summarization_settings.get('max_summary_length', 2000)
-    include_key_findings = summarization_settings.get(
-        'include_key_findings', True)
-    preserve_citations = summarization_settings.get('preserve_citations', True)
-    highlight_critical_issues = summarization_settings.get(
-        'highlight_critical_issues', True)
+    summarization_settings = summarizer_config.get("summarization_settings", {})
+    max_summary_length = summarization_settings.get("max_summary_length", 2000)
+    include_key_findings = summarization_settings.get("include_key_findings", True)
+    preserve_citations = summarization_settings.get("preserve_citations", True)
+    highlight_critical_issues = summarization_settings.get("highlight_critical_issues", True)
 
-    output_format = summarizer_config.get('output_format', {})
+    output_format = summarizer_config.get("output_format", {})
     sections = output_format.get(
-        'sections', [
-            'Key Points', 'Critical Findings', 'Implications', 'Recommendations'])
+        "sections",
+        ["Key Points", "Critical Findings", "Implications", "Recommendations"],
+    )
 
     return f"""{get_execution_context()}
 
