@@ -222,8 +222,7 @@ async def health_check():
 async def list_agents(
     page: int = Query(1, ge=1, description="ページ番号（1から開始）"),
     page_size: int = Query(20, ge=1, le=100, description="1ページあたりのアイテム数（最大100）"),
-    status: str
-    | None = Query(
+    status: str | None = Query(
         None,
         description="エージェントステータスでフィルタリング（idle, running, completed, error）",
     ),

@@ -143,7 +143,10 @@ class CitationPlugin:
         self,
         report_text: Annotated[str, "The draft report text to process with citations"],
         search_results: Annotated[list[dict[str, Any]], "Optional list of internal search result dictionaries"] = None,
-    ) -> Annotated[str, "Report with proper citations and reference section (internal sources only)",]:
+    ) -> Annotated[
+        str,
+        "Report with proper citations and reference section (internal sources only)",
+    ]:
         """Process citations for a complete report."""
         return self.manager.process_citations(report_text, search_results)
 

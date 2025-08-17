@@ -395,8 +395,12 @@ class ResearchExecutor:
                     synthesized_parts.append(f"- {formatted_indicator}")
             else:
                 # Fallback to default indicators
-                synthesized_parts.append("- ✅ Temperature Variation: 0.2(conservative) → 0.6(balanced) → 0.9(creative)")
-                synthesized_parts.append(f"- ✅ Parallel Agents: {len(temperature_configs)} agents concurrent execution")
+                synthesized_parts.append(
+                    "- ✅ Temperature Variation: 0.2(conservative) → 0.6(balanced) → 0.9(creative)"
+                )
+                synthesized_parts.append(
+                    f"- ✅ Parallel Agents: {len(temperature_configs)} agents concurrent execution"
+                )
                 synthesized_parts.append("- ✅ Internal Document Search: ModularSearchPlugin integration")
                 synthesized_parts.append("- ✅ Diverse Approaches: Optimized analysis breadth and depth")
                 synthesized_parts.append("- ✅ Source Citations: Complete citation information for all results")
